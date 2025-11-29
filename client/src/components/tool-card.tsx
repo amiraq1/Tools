@@ -28,10 +28,10 @@ export function ToolCard({ tool, variant = "default" }: ToolCardProps) {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
+    if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
+    if (diffHours < 24) return `منذ ${diffHours} ساعة`;
+    if (diffDays < 7) return `منذ ${diffDays} أيام`;
+    return date.toLocaleDateString("ar");
   };
 
   const getPricingColor = (pricing: string) => {
@@ -104,13 +104,13 @@ export function ToolCard({ tool, variant = "default" }: ToolCardProps) {
                 </h3>
               </Link>
               {tool.isFeatured && (
-                <Badge variant="secondary" className="text-xs">Featured</Badge>
+                <Badge variant="secondary" className="text-xs">مميز</Badge>
               )}
               {tool.isNew && (
-                <Badge className="bg-emerald-500/10 text-emerald-500 text-xs">New</Badge>
+                <Badge className="bg-emerald-500/10 text-emerald-500 text-xs">جديد</Badge>
               )}
               {tool.isTrending && (
-                <Badge className="bg-orange-500/10 text-orange-500 text-xs">Trending</Badge>
+                <Badge className="bg-orange-500/10 text-orange-500 text-xs">رائج</Badge>
               )}
             </div>
             <a
@@ -121,7 +121,7 @@ export function ToolCard({ tool, variant = "default" }: ToolCardProps) {
               onClick={(e) => e.stopPropagation()}
               data-testid={`link-website-${tool.id}`}
             >
-              Open website <ExternalLink className="w-3 h-3" />
+              زيارة الموقع <ExternalLink className="w-3 h-3" />
             </a>
           </div>
           <div className="flex gap-1">

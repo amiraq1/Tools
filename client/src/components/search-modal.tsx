@@ -19,8 +19,8 @@ export function SearchModal({ open, onOpenChange, tools }: SearchModalProps) {
   const [, setLocation] = useLocation();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const recentSearches = ["ChatGPT", "Image generation", "Code assistant", "Writing tools"];
-  const trendingSearches = ["AI video", "Voice cloning", "PDF analyzer", "Automation"];
+  const recentSearches = ["ChatGPT", "توليد الصور", "مساعد البرمجة", "أدوات الكتابة"];
+  const trendingSearches = ["فيديو ذكي", "استنساخ الصوت", "محلل PDF", "الأتمتة"];
 
   const filteredTools = query.length > 0
     ? tools.filter(
@@ -82,7 +82,7 @@ export function SearchModal({ open, onOpenChange, tools }: SearchModalProps) {
           <Input
             ref={inputRef}
             type="search"
-            placeholder="Search AI tools..."
+            placeholder="ابحث عن أدوات الذكاء الاصطناعي..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -107,7 +107,7 @@ export function SearchModal({ open, onOpenChange, tools }: SearchModalProps) {
               <div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                   <Clock className="w-4 h-4" />
-                  <span>Recent searches</span>
+                  <span>البحوث الأخيرة</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {recentSearches.map((term) => (
@@ -126,7 +126,7 @@ export function SearchModal({ open, onOpenChange, tools }: SearchModalProps) {
               <div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                   <TrendingUp className="w-4 h-4" />
-                  <span>Trending searches</span>
+                  <span>البحوث الرائجة</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {trendingSearches.map((term) => (
@@ -170,8 +170,8 @@ export function SearchModal({ open, onOpenChange, tools }: SearchModalProps) {
             </div>
           ) : (
             <div className="p-8 text-center text-muted-foreground">
-              <p>No results found for "{query}"</p>
-              <p className="text-sm mt-1">Try searching for something else</p>
+              <p>لم يتم العثور على نتائج "{query}"</p>
+              <p className="text-sm mt-1">حاول البحث عن شيء آخر</p>
             </div>
           )}
         </div>
@@ -181,14 +181,14 @@ export function SearchModal({ open, onOpenChange, tools }: SearchModalProps) {
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">↑</kbd>
               <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">↓</kbd>
-              <span>navigate</span>
+              <span>التنقل</span>
             </span>
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">↵</kbd>
-              <span>select</span>
+              <span>تحديد</span>
             </span>
           </div>
-          <span>{filteredTools.length} results</span>
+          <span>{filteredTools.length} نتيجة</span>
         </div>
       </DialogContent>
     </Dialog>
