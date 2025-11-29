@@ -5,27 +5,31 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, ArrowRight } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Login() {
   const [, navigate] = useLocation();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     setIsLoading(true);
     
-    // محاكاة تسجيل الدخول
-    setTimeout(() => {
-      localStorage.setItem("nabdh-user", JSON.stringify({
-        email,
-        name: email.split("@")[0],
-        isLoggedIn: true
-      }));
-      setIsLoading(false);
+    try {
+      await apiRequest("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+      });
       navigate("/");
-    }, 1000);
+    } catch (err: any) {
+      setError(err.message || "فشل تسجيل الدخول");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -52,18 +56,18 @@ export default function Login() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">البريد الإلكتروني</Label>
+              <Label htmlFor="username">اسم المستخدم</Label>
               <div className="relative">
                 <Mail className="absolute right-3 top-3 w-4 h-4 text-muted-foreground" />
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username"
+                  type="text"
+                  placeholder="اسم المستخدم"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                   className="pr-10"
-                  data-testid="input-email"
+                  data-testid="input-username"
                 />
               </div>
             </div>
@@ -84,6 +88,12 @@ export default function Login() {
                 />
               </div>
             </div>
+
+            {error && (
+              <div className="bg-red-500/10 text-red-600 dark:text-red-400 text-sm p-3 rounded-md">
+                {error}
+              </div>
+            )}
 
             <Button
               type="submit"

@@ -5,10 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Signup() {
   const [, navigate] = useLocation();
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -26,16 +27,17 @@ export default function Signup() {
 
     setIsLoading(true);
 
-    // محاكاة إنشاء حساب
-    setTimeout(() => {
-      localStorage.setItem("nabdh-user", JSON.stringify({
-        name,
-        email,
-        isLoggedIn: true
-      }));
-      setIsLoading(false);
+    try {
+      await apiRequest("/api/auth/signup", {
+        method: "POST",
+        body: JSON.stringify({ username, email, password }),
+      });
       navigate("/");
-    }, 1000);
+    } catch (err: any) {
+      setError(err.message || "فشل إنشاء الحساب");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -62,18 +64,18 @@ export default function Signup() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">الاسم الكامل</Label>
+              <Label htmlFor="username">اسم المستخدم</Label>
               <div className="relative">
                 <User className="absolute right-3 top-3 w-4 h-4 text-muted-foreground" />
                 <Input
-                  id="name"
+                  id="username"
                   type="text"
-                  placeholder="أحمد محمد"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  placeholder="اسم المستخدم"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                   className="pr-10"
-                  data-testid="input-name"
+                  data-testid="input-username"
                 />
               </div>
             </div>

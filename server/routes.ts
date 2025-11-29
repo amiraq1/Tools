@@ -1,8 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { searchQuerySchema } from "@shared/schema";
+import { searchQuerySchema, insertUserSchema } from "@shared/schema";
 import { registerStripeRoutes } from "./stripeRoutes";
+import { hash, verify } from "./auth";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -10,6 +11,73 @@ export async function registerRoutes(
 ): Promise<Server> {
   // Register Stripe payment routes
   registerStripeRoutes(app);
+
+  // Authentication routes
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { username, password, email } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password required" });
+      }
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+      const hashedPassword = await hash(password);
+      const user = await storage.createUser({
+        username,
+        password: hashedPassword,
+        email,
+      });
+      req.session!.userId = user.id;
+      res.json({ user: { id: user.id, username: user.username } });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password required" });
+      }
+      const user = await storage.getUserByUsername(username);
+      if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      const isValid = await verify(password, user.password);
+      if (!isValid) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      req.session!.userId = user.id;
+      res.json({ user: { id: user.id, username: user.username } });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.json({ user: { id: user.id, username: user.username } });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session!.destroy((err: any) => {
+      if (err) return res.status(500).json({ error: "Logout failed" });
+      res.json({ success: true });
+    });
+  });
 
   // Get all tools with optional filters
   app.get("/api/tools", async (req, res) => {
