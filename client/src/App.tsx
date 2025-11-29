@@ -16,6 +16,10 @@ const Popular = lazy(() => import("@/pages/popular"));
 const Settings = lazy(() => import("@/pages/settings"));
 const Login = lazy(() => import("@/pages/login"));
 const Signup = lazy(() => import("@/pages/signup"));
+const About = lazy(() => import("@/pages/about"));
+const Contact = lazy(() => import("@/pages/contact"));
+const Privacy = lazy(() => import("@/pages/privacy"));
+const Terms = lazy(() => import("@/pages/terms"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 function PageLoader() {
@@ -46,6 +50,10 @@ function Router() {
         <Route path="/settings" component={Settings} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
+        <Route path="/about" component={About} />
+        <Route path="/contact" component={Contact} />
+        <Route path="/privacy" component={Privacy} />
+        <Route path="/terms" component={Terms} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
