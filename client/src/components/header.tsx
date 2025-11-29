@@ -59,10 +59,11 @@ export function Header({ tools }: HeaderProps) {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2.5"
-                  className="w-4.5 h-4.5 text-white"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-5 h-5 text-white"
                 >
-                  <path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z" />
-                  <path d="M12 7v5l3.536 3.536" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M3 12h4l3-9 4 18 3-9h4" />
                 </svg>
               </div>
               <span className="font-bold text-lg hidden sm:block bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent group-hover:from-purple-500 group-hover:to-blue-400 transition-all duration-300">نبض</span>
