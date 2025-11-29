@@ -7,7 +7,11 @@ import { ToolsGrid } from "@/components/tools-grid";
 import { CategoryFilters, PricingFilters } from "@/components/category-filters";
 import type { AITool, ToolsResponse } from "@shared/schema";
 
-function buildToolsUrl(category?: string, pricing?: string, sort?: string): string {
+function buildToolsUrl(
+  category?: string,
+  pricing?: string,
+  sort?: string,
+): string {
   const params = new URLSearchParams();
   if (category) params.set("category", category);
   if (pricing) params.set("pricing", pricing);
@@ -26,7 +30,7 @@ export default function Trending() {
     queryKey: [toolsUrl],
   });
 
-  const tools = toolsData?.tools?.filter(t => t.isTrending) || [];
+  const tools = toolsData?.tools?.filter((t) => t.isTrending) || [];
   const allTools = toolsData?.tools || [];
 
   return (
@@ -40,9 +44,9 @@ export default function Trending() {
               <Flame className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">Trending</h1>
+              <h1 className="text-3xl font-bold">الأدوات الرائجة</h1>
               <p className="text-muted-foreground">
-                AI tools gaining momentum right now
+                أدوات الذكاء الاصطناعي التي تحظى بزخم كبير في نبض الآن
               </p>
             </div>
           </div>
@@ -53,7 +57,9 @@ export default function Trending() {
               onCategoryChange={setSelectedCategory}
             />
             <div className="flex items-center gap-4 flex-wrap">
-              <span className="text-sm text-muted-foreground">Pricing:</span>
+              <span className="text-sm text-muted-foreground">
+                نوع التسعير:
+              </span>
               <PricingFilters
                 selectedPricing={selectedPricing}
                 onPricingChange={setSelectedPricing}
@@ -63,7 +69,7 @@ export default function Trending() {
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
             <TrendingUp className="w-4 h-4" />
-            <span>{tools.length} trending tools</span>
+            <span>{tools.length} أداة رائجة</span>
           </div>
 
           <ToolsGrid tools={tools} isLoading={isLoading} />

@@ -13,16 +13,16 @@ interface HeaderProps {
 }
 
 const mainCategories = [
-  { name: "Personal", href: "/category/personal" },
-  { name: "Work", href: "/category/work" },
-  { name: "Creativity", href: "/category/creativity" },
+  { name: "الحياة الشخصية", href: "/category/personal" },
+  { name: "العمل", href: "/category/work" },
+  { name: "الإبداع", href: "/category/creativity" },
 ];
 
 const navLinks = [
-  { name: "New", href: "/" },
-  { name: "Popular", href: "/popular" },
-  { name: "Trending", href: "/trending" },
-  { name: "Leaderboard", href: "/leaderboard" },
+  { name: "الأحدث", href: "/" },
+  { name: "الأدوات الشائعة", href: "/popular" },
+  { name: "الأدوات الرائجة", href: "/trending" },
+  { name: "قائمة المتصدرين", href: "/leaderboard" },
 ];
 
 export function Header({ tools }: HeaderProps) {
@@ -51,13 +51,15 @@ export function Header({ tools }: HeaderProps) {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex h-14 items-center gap-4">
+            {/* الشعار / اسم الموقع */}
             <Link href="/" className="flex items-center gap-2 shrink-0">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-lg hidden sm:block">TAAFT</span>
+              <span className="font-bold text-lg hidden sm:block">نبض</span>
             </Link>
 
+            {/* التصنيفات الرئيسية (ديسكتوب) */}
             <div className="hidden md:flex items-center gap-1">
               {mainCategories.map((cat) => (
                 <Link key={cat.name} href={cat.href}>
@@ -65,9 +67,9 @@ export function Header({ tools }: HeaderProps) {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      location.startsWith(cat.href) && "bg-muted"
+                      location.startsWith(cat.href) && "bg-muted",
                     )}
-                    data-testid={`link-category-${cat.name.toLowerCase()}`}
+                    data-testid={`link-category-${cat.href.split("/").pop()}`}
                   >
                     {cat.name}
                   </Button>
@@ -75,29 +77,29 @@ export function Header({ tools }: HeaderProps) {
               ))}
             </div>
 
+            {/* زر البحث الرئيسي */}
             <button
               onClick={() => setSearchOpen(true)}
               className="flex-1 max-w-md flex items-center gap-3 px-3 h-9 bg-muted rounded-md text-muted-foreground text-sm hover:bg-muted/80 transition-colors"
               data-testid="button-open-search"
             >
               <Search className="w-4 h-4 shrink-0" />
-              <span className="hidden sm:inline">Search AI tools...</span>
-              <span className="sm:hidden">Search...</span>
+              <span className="hidden sm:inline">ابحث عن أدوات الذكاء الاصطناعي…</span>
+              <span className="sm:hidden">بحث…</span>
               <kbd className="ml-auto hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
                 <span className="text-xs">⌘</span>K
               </kbd>
             </button>
 
+            {/* روابط التصفح العلوية (ديسكتوب) */}
             <div className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => (
-                <Link key={link.name} href={link.href}>
+                <Link key={link.href} href={link.href}>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={cn(
-                      location === link.href && "bg-muted"
-                    )}
-                    data-testid={`link-nav-${link.name.toLowerCase()}`}
+                    className={cn(location === link.href && "bg-muted")}
+                    data-testid={`link-nav-${link.href === "/" ? "new" : link.href.slice(1)}`}
                   >
                     {link.name}
                   </Button>
@@ -105,16 +107,31 @@ export function Header({ tools }: HeaderProps) {
               ))}
             </div>
 
+            {/* يمين الهيدر (الإشعارات، الثيم، الدخول) */}
             <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon" className="hidden md:flex" data-testid="button-notifications">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden md:flex"
+                data-testid="button-notifications"
+              >
                 <Bell className="w-5 h-5" />
               </Button>
               <ThemeToggle />
-              <Button variant="ghost" size="sm" className="hidden md:flex" data-testid="button-login">
-                Log in
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden md:flex"
+                data-testid="button-login"
+              >
+                تسجيل الدخول
               </Button>
-              <Button size="sm" className="hidden md:flex" data-testid="button-signup">
-                Sign up
+              <Button
+                size="sm"
+                className="hidden md:flex"
+                data-testid="button-signup"
+              >
+                إنشاء حساب
               </Button>
               <Button
                 variant="ghost"
@@ -123,25 +140,32 @@ export function Header({ tools }: HeaderProps) {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 data-testid="button-mobile-menu"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
               </Button>
             </div>
           </div>
         </div>
 
+        {/* قائمة الموبايل */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t bg-background">
             <div className="p-4 space-y-4">
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider px-2">
-                  Categories
+                <p className="text-xs text-muted-foreground font-medium tracking-wider px-2">
+                  التصنيفات
                 </p>
                 {mainCategories.map((cat) => (
                   <Link key={cat.name} href={cat.href}>
                     <Button
                       variant="ghost"
                       className="w-full justify-start"
-                      data-testid={`mobile-link-category-${cat.name.toLowerCase()}`}
+                      data-testid={`mobile-link-category-${cat.href
+                        .split("/")
+                        .pop()}`}
                     >
                       {cat.name}
                     </Button>
@@ -149,15 +173,15 @@ export function Header({ tools }: HeaderProps) {
                 ))}
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider px-2">
-                  Browse
+                <p className="text-xs text-muted-foreground font-medium tracking-wider px-2">
+                  التصفح
                 </p>
                 {navLinks.map((link) => (
-                  <Link key={link.name} href={link.href}>
+                  <Link key={link.href} href={link.href}>
                     <Button
                       variant="ghost"
                       className="w-full justify-start"
-                      data-testid={`mobile-link-nav-${link.name.toLowerCase()}`}
+                      data-testid={`mobile-link-nav-${link.href === "/" ? "new" : link.href.slice(1)}`}
                     >
                       {link.name}
                     </Button>
@@ -165,11 +189,18 @@ export function Header({ tools }: HeaderProps) {
                 ))}
               </div>
               <div className="pt-4 border-t flex gap-2">
-                <Button variant="outline" className="flex-1" data-testid="mobile-button-login">
-                  Log in
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  data-testid="mobile-button-login"
+                >
+                  تسجيل الدخول
                 </Button>
-                <Button className="flex-1" data-testid="mobile-button-signup">
-                  Sign up
+                <Button
+                  className="flex-1"
+                  data-testid="mobile-button-signup"
+                >
+                  إنشاء حساب
                 </Button>
               </div>
             </div>
@@ -177,7 +208,12 @@ export function Header({ tools }: HeaderProps) {
         )}
       </header>
 
-      <SearchModal open={searchOpen} onOpenChange={setSearchOpen} tools={tools} />
+      {/* مودال البحث */}
+      <SearchModal
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        tools={tools}
+      />
     </>
   );
 }

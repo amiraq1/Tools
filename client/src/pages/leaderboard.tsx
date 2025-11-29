@@ -39,11 +39,11 @@ interface LeaderboardItemProps {
 
 function LeaderboardItem({ tool, rank, metric }: LeaderboardItemProps) {
   const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+    if (num >= 1_000_000) {
+      return (num / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
     }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+    if (num >= 1_000) {
+      return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "k";
     }
     return num.toString();
   };
@@ -98,23 +98,37 @@ function LeaderboardItem({ tool, rank, metric }: LeaderboardItemProps) {
             {rank <= 3 ? (
               <Medal className={cn("w-6 h-6", getMedalColor(rank))} />
             ) : (
-              <span className="text-lg font-bold text-muted-foreground">#{rank}</span>
+              <span className="text-lg font-bold text-muted-foreground">
+                #{rank}
+              </span>
             )}
           </div>
-          <ToolIcon initials={tool.iconInitials} color={tool.iconColor} size="md" />
+          <ToolIcon
+            initials={tool.iconInitials}
+            color={tool.iconColor}
+            size="md"
+          />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-semibold">{tool.name}</h3>
               {tool.isFeatured && (
-                <Badge variant="secondary" className="text-xs">Featured</Badge>
+                <Badge variant="secondary" className="text-xs">
+                  مميز
+                </Badge>
               )}
               {tool.isTrending && (
-                <Badge className="bg-orange-500/10 text-orange-500 text-xs">Trending</Badge>
+                <Badge className="bg-orange-500/10 text-orange-500 text-xs">
+                  رائج
+                </Badge>
               )}
             </div>
-            <p className="text-sm text-muted-foreground truncate">{tool.tagline}</p>
+            <p className="text-sm text-muted-foreground truncate">
+              {tool.tagline}
+            </p>
           </div>
-          <Badge variant="outline" className="shrink-0">{tool.category}</Badge>
+          <Badge variant="outline" className="shrink-0">
+            {tool.category}
+          </Badge>
           {getMetricValue()}
         </div>
       </Card>
@@ -144,24 +158,38 @@ export default function Leaderboard() {
               <Trophy className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">Leaderboard</h1>
-              <p className="text-muted-foreground">Top AI tools ranked by the community</p>
+              <h1 className="text-3xl font-bold">قائمة المتصدرين</h1>
+              <p className="text-muted-foreground">
+                أفضل أدوات الذكاء الاصطناعي بحسب تفاعل مجتمع نبض
+              </p>
             </div>
           </div>
 
           <Tabs defaultValue="votes" className="space-y-6">
             <TabsList className="w-full md:w-auto">
-              <TabsTrigger value="votes" className="gap-2" data-testid="tab-votes">
+              <TabsTrigger
+                value="votes"
+                className="gap-2"
+                data-testid="tab-votes"
+              >
                 <ArrowUp className="w-4 h-4" />
-                Most Voted
+                الأكثر تصويتًا
               </TabsTrigger>
-              <TabsTrigger value="rating" className="gap-2" data-testid="tab-rating">
+              <TabsTrigger
+                value="rating"
+                className="gap-2"
+                data-testid="tab-rating"
+              >
                 <Star className="w-4 h-4" />
-                Top Rated
+                الأعلى تقييمًا
               </TabsTrigger>
-              <TabsTrigger value="views" className="gap-2" data-testid="tab-views">
+              <TabsTrigger
+                value="views"
+                className="gap-2"
+                data-testid="tab-views"
+              >
                 <Eye className="w-4 h-4" />
-                Most Viewed
+                الأكثر مشاهدة
               </TabsTrigger>
             </TabsList>
 
@@ -171,19 +199,34 @@ export default function Leaderboard() {
               <>
                 <TabsContent value="votes" className="space-y-3 mt-6">
                   {sortedByVotes.slice(0, 20).map((tool, index) => (
-                    <LeaderboardItem key={tool.id} tool={tool} rank={index + 1} metric="votes" />
+                    <LeaderboardItem
+                      key={tool.id}
+                      tool={tool}
+                      rank={index + 1}
+                      metric="votes"
+                    />
                   ))}
                 </TabsContent>
 
                 <TabsContent value="rating" className="space-y-3 mt-6">
                   {sortedByRating.slice(0, 20).map((tool, index) => (
-                    <LeaderboardItem key={tool.id} tool={tool} rank={index + 1} metric="rating" />
+                    <LeaderboardItem
+                      key={tool.id}
+                      tool={tool}
+                      rank={index + 1}
+                      metric="rating"
+                    />
                   ))}
                 </TabsContent>
 
                 <TabsContent value="views" className="space-y-3 mt-6">
                   {sortedByViews.slice(0, 20).map((tool, index) => (
-                    <LeaderboardItem key={tool.id} tool={tool} rank={index + 1} metric="views" />
+                    <LeaderboardItem
+                      key={tool.id}
+                      tool={tool}
+                      rank={index + 1}
+                      metric="views"
+                    />
                   ))}
                 </TabsContent>
               </>

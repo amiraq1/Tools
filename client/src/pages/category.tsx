@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
-import { ArrowLeft, Filter } from "lucide-react";
+import { ArrowRight, Filter } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ToolsGrid } from "@/components/tools-grid";
@@ -11,31 +11,58 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { AITool, ToolsResponse } from "@shared/schema";
 
 const categoryDescriptions: Record<string, string> = {
-  personal: "AI tools to enhance your personal life, health, and daily routines.",
-  work: "Professional AI solutions for business, productivity, and workplace efficiency.",
-  creativity: "Unleash your creative potential with AI-powered creative tools.",
-  writing: "AI writing assistants for content creation, editing, and optimization.",
-  images: "Generate, edit, and enhance images with artificial intelligence.",
-  videos: "AI-powered video creation, editing, and enhancement tools.",
-  audio: "Transform audio with AI - transcription, generation, and editing.",
-  code: "AI coding assistants, code generation, and development tools.",
-  data: "Data analysis, visualization, and insights powered by AI.",
-  marketing: "AI marketing tools for campaigns, analytics, and growth.",
-  sales: "AI-powered sales tools for lead generation and conversion.",
-  "customer-support": "AI chatbots and support solutions for customer service.",
-  education: "AI tools for learning, teaching, and educational content.",
-  research: "AI research assistants and academic tools.",
-  productivity: "Boost your productivity with AI automation and optimization.",
-  "social-media": "AI tools for social media management and content creation.",
-  design: "AI design tools for graphics, UI/UX, and visual content.",
-  finance: "AI solutions for financial analysis and management.",
-  legal: "AI tools for legal research and document analysis.",
-  healthcare: "AI healthcare tools for diagnostics and patient care.",
+  personal: "أدوات ذكاء اصطناعي لتحسين حياتك الشخصية وصحتك وروتينك اليومي.",
+  work: "حلول ذكاء اصطناعي احترافية للأعمال، الإنتاجية، وكفاءة بيئة العمل.",
+  creativity: "أطلق إبداعك مع أدوات إبداعية مدعومة بالذكاء الاصطناعي.",
+  writing: "مساعدو كتابة بالذكاء الاصطناعي لإنشاء المحتوى وتحريره وتحسينه.",
+  images: "توليد وتحرير وتحسين الصور باستخدام الذكاء الاصطناعي.",
+  videos: "أدوات لإنشاء وتحرير وتحسين الفيديو بالذكاء الاصطناعي.",
+  audio: "تحويل ومعالجة الصوت: تفريغ، توليد، وتحرير بالذكاء الاصطناعي.",
+  code: "مساعدو برمجة وتوليد شيفرة وأدوات تطوير بالذكاء الاصطناعي.",
+  data: "تحليل البيانات، تصورها، واستخلاص الرؤى باستخدام الذكاء الاصطناعي.",
+  marketing: "أدوات تسويق بالذكاء الاصطناعي للحملات، التحليلات، والنمو.",
+  sales: "أدوات مبيعات مدعومة بالذكاء الاصطناعي لتوليد وترقية العملاء المحتملين.",
+  "customer-support": "شات بوتس وحلول دعم عملاء بالذكاء الاصطناعي.",
+  education: "أدوات تعليمية وتعلمية مدعومة بالذكاء الاصطناعي.",
+  research: "مساعدو بحث وأدوات أكاديمية بالذكاء الاصطناعي.",
+  productivity: "ارفع إنتاجيتك من خلال الأتمتة والتحسين بالذكاء الاصطناعي.",
+  "social-media": "أدوات لإدارة وتحليل وإنشاء محتوى وسائل التواصل الاجتماعي بالذكاء الاصطناعي.",
+  design: "أدوات تصميم للرسوميات وواجهات المستخدم والمحتوى البصري بالذكاء الاصطناعي.",
+  finance: "حلول ذكاء اصطناعي للتحليل والإدارة المالية.",
+  legal: "أدوات للبحث القانوني وتحليل المستندات بالذكاء الاصطناعي.",
+  healthcare: "أدوات للرعاية الصحية والتشخيص ودعم القرار الطبي بالذكاء الاصطناعي.",
+};
+
+const categoryTitles: Record<string, string> = {
+  personal: "الحياة الشخصية",
+  work: "العمل",
+  creativity: "الإبداع",
+  writing: "الكتابة",
+  images: "الصور",
+  videos: "الفيديو",
+  audio: "الصوت",
+  code: "البرمجة",
+  data: "البيانات",
+  marketing: "التسويق",
+  sales: "المبيعات",
+  "customer-support": "دعم العملاء",
+  education: "التعليم",
+  research: "البحث",
+  productivity: "الإنتاجية",
+  "social-media": "وسائل التواصل الاجتماعي",
+  design: "التصميم",
+  finance: "التمويل",
+  legal: "القانون",
+  healthcare: "الرعاية الصحية",
 };
 
 type SortTab = "new" | "popular" | "top-rated";
 
-function buildToolsUrl(category?: string, pricing?: string, sort?: string): string {
+function buildToolsUrl(
+  category?: string,
+  pricing?: string,
+  sort?: string,
+): string {
   const params = new URLSearchParams();
   if (category) params.set("category", category);
   if (pricing) params.set("pricing", pricing);
@@ -49,11 +76,16 @@ export default function Category() {
   const [selectedPricing, setSelectedPricing] = useState<string | undefined>();
   const [sortTab, setSortTab] = useState<SortTab>("new");
 
-  const categoryName = category
+  const slugKey = (category ?? "").toLowerCase();
+
+  // الاسم المعروض للفئة بالعربي مع fallback للاسم الإنجليزي إن لزم
+  const categoryNameEnglish = category
     ? category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, " ")
     : "";
 
-  const toolsUrl = buildToolsUrl(categoryName, selectedPricing, sortTab);
+  const categoryTitle = categoryTitles[slugKey] ?? categoryNameEnglish;
+
+  const toolsUrl = buildToolsUrl(categoryNameEnglish, selectedPricing, sortTab);
 
   const { data: toolsData, isLoading } = useQuery<ToolsResponse>({
     queryKey: [toolsUrl],
@@ -66,7 +98,9 @@ export default function Category() {
 
   const tools = toolsData?.tools || [];
   const allTools = allToolsData?.tools || [];
-  const description = categoryDescriptions[category?.toLowerCase() || ""] || "";
+  const description = categoryDescriptions[slugKey] || "";
+
+  const total = toolsData?.total || 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -75,28 +109,46 @@ export default function Category() {
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <Link href="/">
-            <Button variant="ghost" size="sm" className="mb-6 -ml-2" data-testid="button-back">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to all tools
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-6"
+              data-testid="button-back"
+            >
+              <ArrowRight className="w-4 h-4" />
+              الرجوع لكل الأدوات
             </Button>
           </Link>
 
           <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">{categoryName}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+              {categoryTitle}
+            </h1>
             {description && (
-              <p className="text-lg text-muted-foreground max-w-2xl">{description}</p>
+              <p className="text-lg text-muted-foreground max-w-2xl">
+                {description}
+              </p>
             )}
             <p className="text-sm text-muted-foreground mt-2">
-              {toolsData?.total || 0} tools found
+              {total} أداة في هذه الفئة
             </p>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <Tabs value={sortTab} onValueChange={(v) => setSortTab(v as SortTab)}>
+            <Tabs
+              value={sortTab}
+              onValueChange={(v) => setSortTab(v as SortTab)}
+            >
               <TabsList>
-                <TabsTrigger value="new" data-testid="tab-new">Newest</TabsTrigger>
-                <TabsTrigger value="popular" data-testid="tab-popular">Most Popular</TabsTrigger>
-                <TabsTrigger value="top-rated" data-testid="tab-top-rated">Top Rated</TabsTrigger>
+                <TabsTrigger value="new" data-testid="tab-new">
+                  الأحدث
+                </TabsTrigger>
+                <TabsTrigger value="popular" data-testid="tab-popular">
+                  الأكثر شهرة
+                </TabsTrigger>
+                <TabsTrigger value="top-rated" data-testid="tab-top-rated">
+                  الأعلى تقييمًا
+                </TabsTrigger>
               </TabsList>
             </Tabs>
 
@@ -113,8 +165,12 @@ export default function Category() {
 
           {tools.length > 0 && toolsData && toolsData.total > tools.length && (
             <div className="mt-8 text-center">
-              <Button variant="outline" size="lg" data-testid="button-load-more">
-                Load more tools
+              <Button
+                variant="outline"
+                size="lg"
+                data-testid="button-load-more"
+              >
+                تحميل المزيد من الأدوات
               </Button>
             </div>
           )}

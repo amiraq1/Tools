@@ -1,20 +1,31 @@
-import express, { type Request, Response, NextFunction } from "express";
+import express, {
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
-import { createServer } from "http";
+import { createServer, type IncomingMessage } from "http";
 
 const app = express();
 const httpServer = createServer(app);
 
+// نضيف rawBody على IncomingMessage مع نوع واضح
 declare module "http" {
   interface IncomingMessage {
-    rawBody: unknown;
+    rawBody?: Buffer;
   }
+}
+
+// نضمن أن Request فعلاً يورّث من IncomingMessage بعد التوسيع
+declare module "express-serve-static-core" {
+  interface Request extends IncomingMessage {}
 }
 
 app.use(
   express.json({
     verify: (req, _res, buf) => {
+      // نحتفظ بالـ raw body (مفيد للـ webhooks مثلاً)
       req.rawBody = buf;
     },
   }),
@@ -33,23 +44,62 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
+// اختيارية: دالة بسيطة لتنظيف الرد قبل اللوق
+function sanitizeResponseBody(body: unknown): unknown {
+  if (body && typeof body === "object") {
+    const cloned: any = { ...(body as Record<string, unknown>) };
+
+    const sensitiveKeys = [
+      "password",
+      "token",
+      "accessToken",
+      "refreshToken",
+      "secret",
+    ];
+    for (const key of sensitiveKeys) {
+      if (key in cloned) {
+        cloned[key] = "[REDACTED]";
+      }
+    }
+
+    return cloned;
+  }
+
+  return body;
+}
+
+// ميدلوير اللوق للـ /api
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  let capturedJsonResponse: unknown;
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
+  const originalResJson = res.json.bind(res);
+  // نلف res.json ونحتفظ بالـ body اللي طالع
+  res.json = ((body?: any) => {
+    capturedJsonResponse = body;
+    return originalResJson(body);
+  }) as typeof res.json;
 
   res.on("finish", () => {
     const duration = Date.now() - start;
+
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+
+      if (capturedJsonResponse !== undefined) {
+        // نتجنب لوق ضخم أو تسريب بيانات؛ نطبع فقط في non-production وبحد طول معيّن
+        if (process.env.NODE_ENV !== "production") {
+          const safeBody = sanitizeResponseBody(capturedJsonResponse);
+          const serialized = JSON.stringify(safeBody);
+          const maxLength = 2000;
+
+          logLine += ` :: ${
+            serialized.length > maxLength
+              ? serialized.slice(0, maxLength) + "...[truncated]"
+              : serialized
+          }`;
+        }
       }
 
       log(logLine);
@@ -59,40 +109,64 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
-  await registerRoutes(httpServer, app);
-
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (process.env.NODE_ENV === "production") {
-    serveStatic(app);
-  } else {
-    const { setupVite } = await import("./vite");
-    await setupVite(httpServer, app);
+// Error handler مركزي
+function errorHandler(
+  err: any,
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  // لو الرد بدأ يتبعت، نخلي Express يتصرف
+  if (res.headersSent) {
+    return next(err);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
+  const status = err.status ?? err.statusCode ?? 500;
+  const message = err.message ?? "Internal Server Error";
+
+  log(`${status} error: ${message}`, "error");
+
+  // في أخطاء السيرفر نطبع الستاك للكونسول
+  if (status >= 500) {
+    console.error(err);
+  }
+
+  res.status(status).json({ message });
+}
+
+(async () => {
+  try {
+    // نسجل الراوتس أول
+    await registerRoutes(httpServer, app);
+
+    // بعد الراوتس نفعّل الـ error handler
+    app.use(errorHandler);
+
+    // في الإنتاج نخدم ملفات ثابتة؛ في التطوير نستخدم Vite
+    if (process.env.NODE_ENV === "production") {
+      serveStatic(app);
+    } else {
+      const { setupVite } = await import("./vite");
+      await setupVite(httpServer, app);
+    }
+
+    // ALWAYS serve the app on the port specified in the environment variable PORT
+    // Other ports are firewalled. Default to 5000 if not specified.
+    const port = Number.parseInt(process.env.PORT ?? "5000", 10);
+
+    httpServer.listen(
+      {
+        port,
+        host: "0.0.0.0",
+        reusePort: true,
+      },
+      () => {
+        log(`serving on port ${port}`);
+      },
+    );
+  } catch (err) {
+    console.error("Fatal error during server startup:", err);
+    // لو في خطأ أثناء الإقلاع، نخرج بكود فشل واضح
+    process.exit(1);
+  }
 })();

@@ -1,9 +1,12 @@
+
+import { useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
+
 import Home from "@/pages/home";
 import ToolDetail from "@/pages/tool-detail";
 import Category from "@/pages/category";
@@ -27,12 +30,25 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    // تغيير اسم الموقع في التبويب
+    document.title = "نبض";
+
+    // ضبط لغة واتجاه الصفحة كاملة
+    document.documentElement.lang = "ar";
+    document.documentElement.dir = "rtl";
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="taaft-theme">
+      {/* غيّرنا اسم storageKey من taaft-theme إلى nabdh-theme أو أي اسم يعجبك */}
+      <ThemeProvider defaultTheme="dark" storageKey="nabdh-theme">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          {/* نضمن أن كل المحتوى RTL أيضاً داخل الجسم */}
+          <div dir="rtl" className="min-h-screen font-sans">
+            <Router />
+          </div>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

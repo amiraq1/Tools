@@ -7,7 +7,7 @@ import {
   Share2,
   Star,
   Check,
-  ArrowLeft,
+  ArrowRight,
   Globe,
   Tag,
   Calendar,
@@ -34,7 +34,11 @@ export default function ToolDetail() {
   });
 
   const { data: relatedTools } = useQuery<AITool[]>({
-    queryKey: [`/api/tools/related/${encodeURIComponent(tool?.category || "")}?excludeId=${tool?.id || ""}`],
+    queryKey: [
+      `/api/tools/related/${encodeURIComponent(
+        tool?.category || "",
+      )}?excludeId=${tool?.id || ""}`,
+    ],
     enabled: !!tool?.category,
   });
 
@@ -43,17 +47,17 @@ export default function ToolDetail() {
   });
 
   const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+    if (num >= 1_000_000) {
+      return (num / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
     }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+    if (num >= 1_000) {
+      return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "k";
     }
     return num.toString();
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("en-US", {
+    return new Date(dateStr).toLocaleDateString("ar", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -104,14 +108,14 @@ export default function ToolDetail() {
         <Header tools={allTools?.tools || []} />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-2xl font-bold mb-2">Tool not found</h1>
+            <h1 className="text-2xl font-bold mb-2">الأداة غير موجودة</h1>
             <p className="text-muted-foreground mb-4">
-              The tool you're looking for doesn't exist or has been removed.
+              الأداة التي تبحث عنها غير متوفرة أو ربما تم حذفها.
             </p>
             <Link href="/">
-              <Button>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to home
+              <Button className="gap-2">
+                <ArrowRight className="w-4 h-4" />
+                العودة للرئيسية
               </Button>
             </Link>
           </div>
@@ -128,13 +132,19 @@ export default function ToolDetail() {
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <Link href="/">
-            <Button variant="ghost" size="sm" className="mb-6 -ml-2" data-testid="button-back">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to tools
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-6 gap-2"
+              data-testid="button-back"
+            >
+              <ArrowRight className="w-4 h-4" />
+              الرجوع لقائمة الأدوات
             </Button>
           </Link>
 
           <div className="grid lg:grid-cols-3 gap-8">
+            {/* القسم الرئيسي */}
             <div className="lg:col-span-2 space-y-6">
               <div className="flex items-start gap-4 md:gap-6">
                 <ToolIcon
@@ -145,18 +155,26 @@ export default function ToolDetail() {
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <h1 className="text-2xl md:text-3xl font-bold">{tool.name}</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold">
+                      {tool.name}
+                    </h1>
                     {tool.isFeatured && (
-                      <Badge variant="secondary">Featured</Badge>
+                      <Badge variant="secondary">مميز</Badge>
                     )}
                     {tool.isNew && (
-                      <Badge className="bg-emerald-500/10 text-emerald-500">New</Badge>
+                      <Badge className="bg-emerald-500/10 text-emerald-500">
+                        جديدة
+                      </Badge>
                     )}
                     {tool.isTrending && (
-                      <Badge className="bg-orange-500/10 text-orange-500">Trending</Badge>
+                      <Badge className="bg-orange-500/10 text-orange-500">
+                        رائجة
+                      </Badge>
                     )}
                   </div>
-                  <p className="text-lg text-muted-foreground mb-4">{tool.tagline}</p>
+                  <p className="text-lg text-muted-foreground mb-4">
+                    {tool.tagline}
+                  </p>
                   <div className="flex items-center gap-3 flex-wrap">
                     <a
                       href={tool.websiteUrl}
@@ -166,15 +184,23 @@ export default function ToolDetail() {
                     >
                       <Button className="gap-2">
                         <Globe className="w-4 h-4" />
-                        Visit Website
+                        زيارة الموقع
                         <ExternalLink className="w-4 h-4" />
                       </Button>
                     </a>
-                    <Button variant="outline" className="gap-2" data-testid="button-save">
+                    <Button
+                      variant="outline"
+                      className="gap-2"
+                      data-testid="button-save"
+                    >
                       <Bookmark className="w-4 h-4" />
-                      Save
+                      حفظ
                     </Button>
-                    <Button variant="outline" size="icon" data-testid="button-share">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      data-testid="button-share"
+                    >
                       <Share2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -183,22 +209,27 @@ export default function ToolDetail() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>About {tool.name}</CardTitle>
+                  <CardTitle>عن {tool.name}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">{tool.description}</p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {tool.description}
+                  </p>
                 </CardContent>
               </Card>
 
               {tool.features.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Features</CardTitle>
+                    <CardTitle>المميزات</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ul className="grid md:grid-cols-2 gap-3">
                       {tool.features.map((feature, index) => (
-                        <li key={index} className="flex items-start gap-2">
+                        <li
+                          key={index}
+                          className="flex items-start gap-2"
+                        >
                           <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                           <span>{feature}</span>
                         </li>
@@ -213,7 +244,7 @@ export default function ToolDetail() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Tag className="w-5 h-5" />
-                      Tags
+                      الوسوم
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -229,53 +260,74 @@ export default function ToolDetail() {
               )}
             </div>
 
+            {/* العمود الجانبي */}
             <div className="space-y-6">
               <Card>
                 <CardContent className="pt-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Pricing</span>
-                      <Badge className={cn("text-sm", getPricingColor(tool.pricing))}>
+                      <span className="text-muted-foreground">التسعير</span>
+                      <Badge
+                        className={cn(
+                          "text-sm",
+                          getPricingColor(tool.pricing),
+                        )}
+                      >
                         {tool.pricing}
                         {tool.priceDetails && ` ${tool.priceDetails}`}
                       </Badge>
                     </div>
                     <Separator />
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Category</span>
-                      <Link href={`/category/${tool.category.toLowerCase()}`}>
-                        <Badge variant="outline" className="cursor-pointer hover-elevate">
+                      <span className="text-muted-foreground">الفئة</span>
+                      <Link
+                        href={`/category/${tool.category.toLowerCase()}`}
+                      >
+                        <Badge
+                          variant="outline"
+                          className="cursor-pointer hover-elevate"
+                        >
                           {tool.category}
                         </Badge>
                       </Link>
                     </div>
                     <Separator />
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Rating</span>
+                      <span className="text-muted-foreground">التقييم</span>
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                        <span className="font-medium">{tool.rating.toFixed(1)}</span>
+                        <span className="font-medium">
+                          {tool.rating.toFixed(1)}
+                        </span>
                       </div>
                     </div>
                     <Separator />
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Votes</span>
+                      <span className="text-muted-foreground">الأصوات</span>
                       <div className="flex items-center gap-1">
                         <ArrowUp className="w-4 h-4" />
-                        <span className="font-medium">{formatNumber(tool.votes)}</span>
+                        <span className="font-medium">
+                          {formatNumber(tool.votes)}
+                        </span>
                       </div>
                     </div>
                     <Separator />
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Views</span>
+                      <span className="text-muted-foreground">
+                        المشاهدات
+                      </span>
                       <div className="flex items-center gap-1">
                         <Eye className="w-4 h-4" />
-                        <span className="font-medium">{formatNumber(tool.views)}</span>
+                        <span className="font-medium">
+                          {formatNumber(tool.views)}
+                        </span>
                       </div>
                     </div>
                     <Separator />
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Released</span>
+                      <span className="text-muted-foreground">
+                        تاريخ الإطلاق
+                      </span>
                       <div className="flex items-center gap-1 text-sm">
                         <Calendar className="w-4 h-4" />
                         <span>{formatDate(tool.releasedAt)}</span>
@@ -287,9 +339,13 @@ export default function ToolDetail() {
 
               <Card>
                 <CardContent className="pt-6">
-                  <Button className="w-full gap-2" size="lg" data-testid="button-upvote">
+                  <Button
+                    className="w-full gap-2"
+                    size="lg"
+                    data-testid="button-upvote"
+                  >
                     <ArrowUp className="w-5 h-5" />
-                    Upvote ({formatNumber(tool.votes)})
+                    تصويت ({formatNumber(tool.votes)})
                   </Button>
                 </CardContent>
               </Card>
@@ -298,7 +354,9 @@ export default function ToolDetail() {
 
           {relatedTools && relatedTools.length > 0 && (
             <div className="mt-12">
-              <h2 className="text-xl font-bold mb-6">Related Tools</h2>
+              <h2 className="text-xl font-bold mb-6">
+                أدوات ذات صلة
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {relatedTools.slice(0, 3).map((relatedTool) => (
                   <ToolCard key={relatedTool.id} tool={relatedTool} />

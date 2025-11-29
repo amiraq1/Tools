@@ -40,9 +40,9 @@ export default function Popular() {
               <Star className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">Popular</h1>
+              <h1 className="text-3xl font-bold">الأدوات الشائعة</h1>
               <p className="text-muted-foreground">
-                Most upvoted AI tools by the community
+                أكثر أدوات الذكاء الاصطناعي حصولًا على التصويت من مجتمع نبض
               </p>
             </div>
           </div>
@@ -53,7 +53,7 @@ export default function Popular() {
               onCategoryChange={setSelectedCategory}
             />
             <div className="flex items-center gap-4 flex-wrap">
-              <span className="text-sm text-muted-foreground">Pricing:</span>
+              <span className="text-sm text-muted-foreground">نوع التسعير:</span>
               <PricingFilters
                 selectedPricing={selectedPricing}
                 onPricingChange={setSelectedPricing}
@@ -63,7 +63,7 @@ export default function Popular() {
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
             <Users className="w-4 h-4" />
-            <span>{tools.length} popular tools</span>
+            <span>{tools.length} أداة شائعة</span>
           </div>
 
           <ToolsGrid tools={tools} isLoading={isLoading} />
