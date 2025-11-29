@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "wouter";
 import {
@@ -27,11 +28,19 @@ import { cn } from "@/lib/utils";
 
 export default function ToolDetail() {
   const { slug } = useParams<{ slug: string }>();
+  const [isSaved, setIsSaved] = useState(false);
 
   const { data: tool, isLoading } = useQuery<AITool>({
     queryKey: [`/api/tools/${slug}`],
     enabled: !!slug,
   });
+
+  useEffect(() => {
+    if (tool) {
+      const savedTools = JSON.parse(localStorage.getItem("nabdh-saved-tools") || "[]");
+      setIsSaved(savedTools.includes(tool.id));
+    }
+  }, [tool?.id]);
 
   const { data: relatedTools } = useQuery<AITool[]>({
     queryKey: [
@@ -74,6 +83,20 @@ export default function ToolDetail() {
         return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
       default:
         return "bg-purple-500/10 text-purple-600 dark:text-purple-400";
+    }
+  };
+
+  const handleSave = () => {
+    if (!tool) return;
+    const savedTools = JSON.parse(localStorage.getItem("nabdh-saved-tools") || "[]");
+    if (savedTools.includes(tool.id)) {
+      const updated = savedTools.filter((id: string) => id !== tool.id);
+      localStorage.setItem("nabdh-saved-tools", JSON.stringify(updated));
+      setIsSaved(false);
+    } else {
+      savedTools.push(tool.id);
+      localStorage.setItem("nabdh-saved-tools", JSON.stringify(savedTools));
+      setIsSaved(true);
     }
   };
 
@@ -189,12 +212,13 @@ export default function ToolDetail() {
                       </Button>
                     </a>
                     <Button
-                      variant="outline"
+                      variant={isSaved ? "default" : "outline"}
                       className="gap-2"
+                      onClick={handleSave}
                       data-testid="button-save"
                     >
-                      <Bookmark className="w-4 h-4" />
-                      حفظ
+                      <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
+                      {isSaved ? "محفوظة" : "حفظ"}
                     </Button>
                     <Button
                       variant="outline"
