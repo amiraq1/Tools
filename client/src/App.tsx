@@ -48,7 +48,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           {/* نضمن أن كل المحتوى RTL أيضاً داخل الجسم */}
-          <div dir="rtl" className="min-h-screen font-sans">
+          <div dir="rtl" className="min-h-screen font-sans page-enter">
             <Router />
           </div>
         </TooltipProvider>

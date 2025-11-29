@@ -51,9 +51,9 @@ export function Header({ tools }: HeaderProps) {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex h-14 items-center gap-4">
-            {/* الشعار / اسم الموقع - محسّن */}
+            {/* الشعار / اسم الموقع - متوهج */}
             <Link href="/" className="flex items-center gap-2 shrink-0 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 via-purple-500 to-blue-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200 group-hover:scale-105">
+              <div className="logo-glow w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 via-purple-500 to-blue-500 flex items-center justify-center transition-all duration-200 group-hover:scale-110">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -65,7 +65,7 @@ export function Header({ tools }: HeaderProps) {
                   <path d="M12 7v5l3.536 3.536" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <span className="font-bold text-lg hidden sm:block bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">نبض</span>
+              <span className="font-bold text-lg hidden sm:block bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent group-hover:from-purple-500 group-hover:to-blue-400 transition-all duration-300">نبض</span>
             </Link>
 
             {/* التصنيفات الرئيسية (ديسكتوب) */}
