@@ -2,12 +2,15 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { searchQuerySchema } from "@shared/schema";
+import { registerStripeRoutes } from "./stripeRoutes";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  
+  // Register Stripe payment routes
+  registerStripeRoutes(app);
+
   // Get all tools with optional filters
   app.get("/api/tools", async (req, res) => {
     try {

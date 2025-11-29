@@ -6,6 +6,9 @@ import express, {
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer, type IncomingMessage } from "http";
+import { runMigrations } from 'stripe-replit-sync';
+import { getStripeSync } from "./stripeClient";
+import { WebhookHandlers } from "./webhookHandlers";
 
 const app = express();
 const httpServer = createServer(app);
@@ -21,6 +24,79 @@ declare module "http" {
 declare module "express-serve-static-core" {
   interface Request extends IncomingMessage {}
 }
+
+// Initialize Stripe on startup
+async function initStripe() {
+  const databaseUrl = process.env.DATABASE_URL;
+
+  if (!databaseUrl) {
+    console.warn('DATABASE_URL not found - Stripe integration skipped');
+    return;
+  }
+
+  try {
+    console.log('Initializing Stripe schema...');
+    await runMigrations({ 
+      databaseUrl,
+      schema: 'stripe'
+    });
+    console.log('Stripe schema ready');
+
+    const stripeSync = await getStripeSync();
+
+    console.log('Setting up managed webhook...');
+    const webhookBaseUrl = `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}`;
+    const { webhook, uuid } = await stripeSync.findOrCreateManagedWebhook(
+      `${webhookBaseUrl}/api/stripe/webhook`,
+      {
+        enabled_events: ['*'],
+        description: 'Managed webhook for Stripe sync',
+      }
+    );
+    console.log(`Webhook configured: ${webhook.url} (UUID: ${uuid})`);
+
+    console.log('Syncing Stripe data...');
+    stripeSync.syncBackfill()
+      .then(() => {
+        console.log('Stripe data synced');
+      })
+      .catch((err) => {
+        console.error('Error syncing Stripe data:', err);
+      });
+  } catch (error) {
+    console.error('Failed to initialize Stripe:', error);
+  }
+}
+
+// Webhook route BEFORE express.json()
+app.post(
+  '/api/stripe/webhook/:uuid',
+  express.raw({ type: 'application/json' }),
+  async (req, res) => {
+    const signature = req.headers['stripe-signature'];
+
+    if (!signature) {
+      return res.status(400).json({ error: 'Missing stripe-signature' });
+    }
+
+    try {
+      const sig = Array.isArray(signature) ? signature[0] : signature;
+
+      if (!Buffer.isBuffer(req.body)) {
+        console.error('STRIPE WEBHOOK ERROR: req.body is not a Buffer');
+        return res.status(500).json({ error: 'Webhook processing error' });
+      }
+
+      const { uuid } = req.params;
+      await WebhookHandlers.processWebhook(req.body as Buffer, sig, uuid);
+
+      res.status(200).json({ received: true });
+    } catch (error: any) {
+      console.error('Webhook error:', error.message);
+      res.status(400).json({ error: 'Webhook processing error' });
+    }
+  }
+);
 
 app.use(
   express.json({
@@ -136,6 +212,9 @@ function errorHandler(
 
 (async () => {
   try {
+    // Initialize Stripe
+    await initStripe();
+
     // نسجل الراوتس أول
     await registerRoutes(httpServer, app);
 
