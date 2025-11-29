@@ -1,4 +1,5 @@
-import { Link } from "wouter";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { ExternalLink, Bookmark, Share2, ArrowUp, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,32 @@ interface ToolCardProps {
 }
 
 export function ToolCard({ tool, variant = "default" }: ToolCardProps) {
+  const [, navigate] = useLocation();
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    const savedTools = JSON.parse(localStorage.getItem("nabdh-saved-tools") || "[]");
+    setIsSaved(savedTools.includes(tool.id));
+  }, [tool.id]);
+
+  const handleSave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const savedTools = JSON.parse(localStorage.getItem("nabdh-saved-tools") || "[]");
+    if (savedTools.includes(tool.id)) {
+      const updated = savedTools.filter((id: string) => id !== tool.id);
+      localStorage.setItem("nabdh-saved-tools", JSON.stringify(updated));
+      setIsSaved(false);
+    } else {
+      savedTools.push(tool.id);
+      localStorage.setItem("nabdh-saved-tools", JSON.stringify(savedTools));
+      setIsSaved(true);
+    }
+  };
+
+  const handleCardClick = () => {
+    navigate(`/tool/${tool.slug}`);
+  };
+
   const formatNumber = (num: number) => {
     if (num >= 1000) {
       return (num / 1000).toFixed(1).replace(/\.0$/, "") + "k";
@@ -49,62 +76,59 @@ export function ToolCard({ tool, variant = "default" }: ToolCardProps) {
 
   if (variant === "compact") {
     return (
-      <Link href={`/tool/${tool.slug}`}>
-        <Card
-          className="group p-3 hover-elevate cursor-pointer transition-all duration-200"
-          data-testid={`card-tool-${tool.id}`}
-        >
-          <div className="flex items-center gap-3">
-            <ToolIcon initials={tool.iconInitials} color={tool.iconColor} size="sm" />
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-sm truncate">{tool.name}</h3>
-              <p className="text-xs text-muted-foreground truncate">{tool.tagline}</p>
-            </div>
+      <Card
+        className="group p-3 hover-elevate cursor-pointer transition-all duration-200"
+        data-testid={`card-tool-${tool.id}`}
+        onClick={handleCardClick}
+      >
+        <div className="flex items-center gap-3">
+          <ToolIcon initials={tool.iconInitials} color={tool.iconColor} size="sm" />
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-sm truncate">{tool.name}</h3>
+            <p className="text-xs text-muted-foreground truncate">{tool.tagline}</p>
           </div>
-        </Card>
-      </Link>
+        </div>
+      </Card>
     );
   }
 
   if (variant === "featured") {
     return (
-      <Link href={`/tool/${tool.slug}`}>
-        <Card
-          className="group p-4 hover-elevate cursor-pointer transition-all duration-200 min-w-[280px] snap-start"
-          data-testid={`card-featured-tool-${tool.id}`}
-        >
-          <div className="flex items-start gap-3">
-            <ToolIcon initials={tool.iconInitials} color={tool.iconColor} size="md" />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold truncate">{tool.name}</h3>
-                <Badge variant="secondary" className="text-xs shrink-0">مميز</Badge>
-              </div>
-              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{tool.tagline}</p>
+      <Card
+        className="group p-4 hover-elevate cursor-pointer transition-all duration-200 min-w-[280px] snap-start"
+        data-testid={`card-featured-tool-${tool.id}`}
+        onClick={handleCardClick}
+      >
+        <div className="flex items-start gap-3">
+          <ToolIcon initials={tool.iconInitials} color={tool.iconColor} size="md" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold truncate">{tool.name}</h3>
+              <Badge variant="secondary" className="text-xs shrink-0">نبض</Badge>
             </div>
+            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{tool.tagline}</p>
           </div>
-        </Card>
-      </Link>
+        </div>
+      </Card>
     );
   }
 
   return (
     <Card
-      className="group hover-elevate transition-all duration-200 overflow-visible"
+      className="group hover-elevate transition-all duration-200 overflow-visible cursor-pointer"
       data-testid={`card-tool-${tool.id}`}
+      onClick={handleCardClick}
     >
       <div className="p-4">
         <div className="flex items-start gap-3">
           <ToolIcon initials={tool.iconInitials} color={tool.iconColor} size="lg" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <Link href={`/tool/${tool.slug}`}>
-                <h3 className="font-semibold hover:text-primary transition-colors cursor-pointer">
-                  {tool.name}
-                </h3>
-              </Link>
+              <h3 className="font-semibold hover:text-primary transition-colors cursor-pointer">
+                {tool.name}
+              </h3>
               {tool.isFeatured && (
-                <Badge variant="secondary" className="text-xs">مميز</Badge>
+                <Badge variant="secondary" className="text-xs">نبض</Badge>
               )}
               {tool.isNew && (
                 <Badge className="bg-emerald-500/10 text-emerald-500 text-xs">جديد</Badge>
@@ -128,11 +152,14 @@ export function ToolCard({ tool, variant = "default" }: ToolCardProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={(e) => e.stopPropagation()}
+              className={cn(
+                "h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity",
+                isSaved && "opacity-100 text-primary"
+              )}
+              onClick={handleSave}
               data-testid={`button-bookmark-${tool.id}`}
             >
-              <Bookmark className="w-4 h-4" />
+              <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
             </Button>
             <Button
               variant="ghost"
