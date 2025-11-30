@@ -49,3 +49,8 @@ waitForPort = 5000
 # بدون Stripe
 [agent]
 integrations = ["github:1.0.0"]
+
+[userenv]
+
+[userenv.production]
+PORT = "5000"
