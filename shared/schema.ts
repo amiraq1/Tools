@@ -92,6 +92,7 @@ export const aiToolSchema = z.object({
   websiteUrl: z.string().url(),
   iconColor: z.string(),
   iconInitials: z.string(),
+  iconUrl: z.string().optional(),
   votes: z.number(),
   saves: z.number(),
   views: z.number(),

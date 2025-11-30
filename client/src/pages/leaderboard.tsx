@@ -106,6 +106,7 @@ function LeaderboardItem({ tool, rank, metric }: LeaderboardItemProps) {
           <ToolIcon
             initials={tool.iconInitials}
             color={tool.iconColor}
+            iconUrl={tool.iconUrl}
             size="md"
           />
           <div className="flex-1 min-w-0">

@@ -117,7 +117,7 @@ function ToolCardComponent({ tool, variant = "default" }: ToolCardProps) {
         onClick={handleCardClick}
       >
         <div className="flex items-center gap-2 sm:gap-3">
-          <ToolIcon initials={tool.iconInitials} color={tool.iconColor} size="sm" />
+          <ToolIcon initials={tool.iconInitials} color={tool.iconColor} iconUrl={tool.iconUrl} size="sm" />
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-xs sm:text-sm truncate">{tool.name}</h3>
             <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{tool.tagline}</p>
@@ -135,7 +135,7 @@ function ToolCardComponent({ tool, variant = "default" }: ToolCardProps) {
         onClick={handleCardClick}
       >
         <div className="flex items-start gap-2 sm:gap-3">
-          <ToolIcon initials={tool.iconInitials} color={tool.iconColor} size="md" />
+          <ToolIcon initials={tool.iconInitials} color={tool.iconColor} iconUrl={tool.iconUrl} size="md" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
               <h3 className="font-semibold text-sm sm:text-base truncate">{tool.name}</h3>
@@ -156,7 +156,7 @@ function ToolCardComponent({ tool, variant = "default" }: ToolCardProps) {
     >
       <div className="p-3 sm:p-4">
         <div className="flex items-start gap-2 sm:gap-3">
-          <ToolIcon initials={tool.iconInitials} color={tool.iconColor} size="lg" className="w-12 h-12 sm:w-14 sm:h-14" />
+          <ToolIcon initials={tool.iconInitials} color={tool.iconColor} iconUrl={tool.iconUrl} size="lg" className="w-12 h-12 sm:w-14 sm:h-14" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
               <h3 className="font-semibold text-sm sm:text-base hover:text-primary transition-colors cursor-pointer">

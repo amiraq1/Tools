@@ -173,6 +173,7 @@ export default function ToolDetail() {
                 <ToolIcon
                   initials={tool.iconInitials}
                   color={tool.iconColor}
+                  iconUrl={tool.iconUrl}
                   size="lg"
                   className="w-20 h-20 md:w-24 md:h-24 text-2xl"
                 />
