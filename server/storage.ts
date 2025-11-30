@@ -137,6 +137,81 @@ const generateScreenshots = (toolSlug: string, category: string): string[] => {
   return getDefaultScreenshots(category);
 };
 
+const toolLogos: Record<string, string> = {
+  "chatgpt": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/512px-ChatGPT_logo.svg.png",
+  "midjourney": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Midjourney_Emblem.png/480px-Midjourney_Emblem.png",
+  "claude": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Anthropic_logo.svg/512px-Anthropic_logo.svg.png",
+  "dalle-3": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/OpenAI_Logo.svg/512px-OpenAI_Logo.svg.png",
+  "github-copilot": "https://github.githubassets.com/images/modules/site/copilot/copilot.png",
+  "notion-ai": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/512px-Notion-logo.svg.png",
+  "jasper": "https://assets-global.website-files.com/60e5f2de011b86acebc30db7/60e5f2de011b860d49c30ec3_Jasper%20Logo.svg",
+  "runway": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Runway_AI_Logo.png/480px-Runway_AI_Logo.png",
+  "grammarly": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Grammarly_Logo.svg/512px-Grammarly_Logo.svg.png",
+  "eleven-labs": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/ElevenLabs_Logo.svg/512px-ElevenLabs_Logo.svg.png",
+  "perplexity-ai": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Perplexity_AI_logo.svg/512px-Perplexity_AI_logo.svg.png",
+  "copy-ai": "https://assets-global.website-files.com/628288c5cd3e8411b90a36a4/628288c5cd3e846e06a36a8f_logo.svg",
+  "synthesia": "https://www.synthesia.io/favicon.ico",
+  "descript": "https://www.descript.com/favicon.ico",
+  "canva-ai": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canva_icon_2021.svg/512px-Canva_icon_2021.svg.png",
+  "hugging-face": "https://huggingface.co/front/assets/huggingface_logo-noborder.svg",
+  "stability-ai": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Stability_AI_Logo.svg/512px-Stability_AI_Logo.svg.png",
+  "writesonic": "https://app.writesonic.com/favicon.ico",
+  "murf-ai": "https://murf.ai/resources/media/images/murf_ai_logo.svg",
+  "lumen5": "https://lumen5.com/favicon.ico",
+  "pictory": "https://pictory.ai/favicon.ico",
+  "beautiful-ai": "https://www.beautiful.ai/favicon.ico",
+  "tome": "https://tome.app/favicon.ico",
+  "codeium": "https://codeium.com/favicon.ico",
+  "tabnine": "https://www.tabnine.com/favicon.ico",
+  "replit-ai": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/New_Replit_Logo.svg/512px-New_Replit_Logo.svg.png",
+  "cursor": "https://cursor.sh/favicon.ico",
+  "mem-ai": "https://mem.ai/favicon.ico",
+  "otter-ai": "https://otter.ai/favicon.ico",
+  "krisp": "https://krisp.ai/favicon.ico",
+  "fireflies-ai": "https://fireflies.ai/favicon.ico",
+  "intercom-fin": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Intercom_logo.svg/512px-Intercom_logo.svg.png",
+  "zendesk-ai": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Zendesk_logo.svg/512px-Zendesk_logo.svg.png",
+  "drift": "https://drift.com/favicon.ico",
+  "mixo": "https://mixo.io/favicon.ico",
+  "durable": "https://durable.co/favicon.ico",
+  "framer-ai": "https://www.framer.com/favicon.ico",
+  "adobe-firefly": "https://www.adobe.com/content/dam/shared/images/product-icons/svg/firefly.svg",
+  "leonardo-ai": "https://leonardo.ai/favicon.ico",
+  "night-cafe": "https://nightcafe.studio/favicon.ico",
+  "suno-ai": "https://suno.ai/favicon.ico",
+  "udio": "https://www.udio.com/favicon.ico",
+  "aiva": "https://www.aiva.ai/favicon.ico",
+  "heygen": "https://www.heygen.com/favicon.ico",
+  "d-id": "https://www.d-id.com/favicon.ico",
+  "invideo-ai": "https://invideo.io/favicon.ico",
+  "gamma": "https://gamma.app/favicon.ico",
+  "slides-ai": "https://www.slidesai.io/favicon.ico",
+  "akkio": "https://www.akkio.com/favicon.ico",
+  "obviously-ai": "https://www.obviously.ai/favicon.ico",
+  "datarobot": "https://www.datarobot.com/favicon.ico",
+  "albert-ai": "https://albert.ai/favicon.ico",
+  "adcreative-ai": "https://www.adcreative.ai/favicon.ico",
+  "phrasee": "https://phrasee.co/favicon.ico",
+  "conversica": "https://www.conversica.com/favicon.ico",
+  "gong": "https://www.gong.io/favicon.ico",
+  "clari": "https://www.clari.com/favicon.ico",
+  "consensus": "https://consensus.app/favicon.ico",
+  "elicit": "https://elicit.org/favicon.ico",
+  "research-rabbit": "https://www.researchrabbit.ai/favicon.ico",
+  "duolingo-max": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Duolingo_logo.svg/512px-Duolingo_logo.svg.png",
+  "khanmigo": "https://www.khanacademy.org/favicon.ico",
+  "quizlet-ai": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Quizlet_Logo.svg/512px-Quizlet_Logo.svg.png",
+  "casetext": "https://casetext.com/favicon.ico",
+  "harvey-ai": "https://www.harvey.ai/favicon.ico",
+  "docassemble": "https://docassemble.org/favicon.ico",
+  "stripe-radar": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Stripe_Logo%2C_revised_2016.svg/512px-Stripe_Logo%2C_revised_2016.svg.png",
+  "kensho": "https://kensho.com/favicon.ico",
+  "alphasense": "https://www.alpha-sense.com/favicon.ico",
+  "ada-health": "https://ada.com/favicon.ico",
+  "babylon-health": "https://www.babylonhealth.com/favicon.ico",
+  "google-health-ai": "https://www.google.com/favicon.ico",
+};
+
 const generateMockTools = (): AITool[] => {
   const tools: AITool[] = [
     {
@@ -151,6 +226,7 @@ const generateMockTools = (): AITool[] => {
       websiteUrl: "https://chat.openai.com",
       iconColor: "#10A37F",
       iconInitials: "GP",
+      iconUrl: toolLogos["chatgpt"],
       votes: 125847,
       saves: 45230,
       views: 2500000,
@@ -175,6 +251,7 @@ const generateMockTools = (): AITool[] => {
       websiteUrl: "https://midjourney.com",
       iconColor: "#000000",
       iconInitials: "MJ",
+      iconUrl: toolLogos["midjourney"],
       votes: 98234,
       saves: 32100,
       views: 1800000,
@@ -198,6 +275,7 @@ const generateMockTools = (): AITool[] => {
       websiteUrl: "https://claude.ai",
       iconColor: "#D97757",
       iconInitials: "CL",
+      iconUrl: toolLogos["claude"],
       votes: 87654,
       saves: 28900,
       views: 1500000,
@@ -221,6 +299,7 @@ const generateMockTools = (): AITool[] => {
       websiteUrl: "https://openai.com/dall-e-3",
       iconColor: "#412991",
       iconInitials: "D3",
+      iconUrl: toolLogos["dalle-3"],
       votes: 76543,
       saves: 24500,
       views: 1200000,
@@ -244,6 +323,7 @@ const generateMockTools = (): AITool[] => {
       websiteUrl: "https://github.com/features/copilot",
       iconColor: "#24292E",
       iconInitials: "GC",
+      iconUrl: toolLogos["github-copilot"],
       votes: 72341,
       saves: 21890,
       views: 980000,
@@ -1633,6 +1713,7 @@ const generateMockTools = (): AITool[] => {
 
   return tools.map(tool => ({
     ...tool,
+    iconUrl: tool.iconUrl || toolLogos[tool.slug],
     screenshots: tool.screenshots || generateScreenshots(tool.slug, tool.category),
   }));
 };
@@ -1660,7 +1741,7 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id, email: null };
+    const user: User = { ...insertUser, id, email: null, createdAt: new Date() };
     this.users.set(id, user);
     return user;
   }
