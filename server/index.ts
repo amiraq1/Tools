@@ -164,8 +164,10 @@ function errorHandler(
       await setupVite(httpServer, app);
     }
 
-   const port = Number(process.env.PORT) || 3000;
-
+    const port =
+      process.env.NODE_ENV === "production"
+        ? Number(process.env.PORT) || 3000
+        : 5000;
 
     httpServer.listen(port, "0.0.0.0", () => {
       log(`Server listening on port ${port}`, "http");
