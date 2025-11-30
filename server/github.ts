@@ -59,3 +59,52 @@ export async function getAuthenticatedUser() {
   const response = await octokit.users.getAuthenticated();
   return response.data;
 }
+
+export async function pushFileToRepo(owner: string, repo: string, path: string, content: string, message: string) {
+  const octokit = await getUncachableGitHubClient();
+  
+  let sha: string | undefined;
+  try {
+    const { data } = await octokit.repos.getContent({
+      owner,
+      repo,
+      path
+    });
+    if (!Array.isArray(data) && 'sha' in data) {
+      sha = data.sha;
+    }
+  } catch (error: any) {
+    if (error.status !== 404) {
+      throw error;
+    }
+  }
+
+  const { data } = await octokit.repos.createOrUpdateFileContents({
+    owner,
+    repo,
+    path,
+    message,
+    content: Buffer.from(content).toString('base64'),
+    sha
+  });
+  
+  return data;
+}
+
+export async function getOrCreateRepo(name: string, description?: string) {
+  const octokit = await getUncachableGitHubClient();
+  const user = await getAuthenticatedUser();
+  
+  try {
+    const { data } = await octokit.repos.get({
+      owner: user.login,
+      repo: name
+    });
+    return data;
+  } catch (error: any) {
+    if (error.status === 404) {
+      return await createRepository(name, description, false);
+    }
+    throw error;
+  }
+}

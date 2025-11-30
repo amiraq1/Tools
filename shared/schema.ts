@@ -87,6 +87,7 @@ export const aiToolSchema = z.object({
   releasedAt: z.string(),
   features: z.array(z.string()),
   tags: z.array(z.string()),
+  screenshots: z.array(z.string()).optional(),
 });
 
 export type AITool = z.infer<typeof aiToolSchema>;

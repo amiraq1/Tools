@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type {
-  AITool,
   FeaturedToolsResponse,
   ToolsResponse,
 } from "@shared/schema";
@@ -57,23 +56,21 @@ export default function Home() {
       <Header tools={allTools} />
 
       <main className="flex-1">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          {/* شارة أعلى الصفحة مثلاً لإطلاق جديد */}
-          <div className="flex items-center gap-3 mb-6 overflow-x-auto pb-2">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 overflow-x-auto pb-2 scrollbar-hide">
             <Link href="/trending">
               <Badge
                 variant="outline"
-                className="cursor-pointer hover-elevate gap-1.5 px-3 py-1.5 shrink-0"
+                className="cursor-pointer hover-elevate gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 shrink-0 text-xs sm:text-sm"
               >
-                <Flame className="w-3.5 h-3.5 text-orange-500" />
+                <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-500" />
                 إطلاق GPT-5 الآن
               </Badge>
             </Link>
           </div>
 
-          {/* أدوات مميزة ورائجة */}
           {!featuredLoading && featuredData && (
-            <div className="space-y-8 mb-8">
+            <div className="space-y-6 sm:space-y-8 mb-6 sm:mb-8">
               {featuredData.featured.length > 0 && (
                 <FeaturedCarousel
                   title="أدوات مميزة"
@@ -89,52 +86,50 @@ export default function Home() {
             </div>
           )}
 
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-primary" />
+          <div className="mb-4 sm:mb-6">
+            <div className="flex items-center justify-between mb-3 sm:mb-4 gap-2">
+              <h2 className="text-lg sm:text-2xl font-bold flex items-center gap-1.5 sm:gap-2">
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 أحدث الأدوات
               </h2>
               <Link href="/new">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="gap-1"
+                  className="gap-0.5 sm:gap-1 text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3"
                   data-testid="link-view-all"
                 >
                   عرض الكل
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </Button>
               </Link>
             </div>
 
-            {/* تبويبات الفرز */}
             <Tabs
               value={sortTab}
               onValueChange={(v) => setSortTab(v as SortTab)}
-              className="mb-4"
+              className="mb-3 sm:mb-4"
             >
-              <TabsList>
-                <TabsTrigger value="new" data-testid="tab-new">
+              <TabsList className="h-8 sm:h-9">
+                <TabsTrigger value="new" className="text-xs sm:text-sm px-2 sm:px-3" data-testid="tab-new">
                   الأحدث
                 </TabsTrigger>
-                <TabsTrigger value="popular" data-testid="tab-popular">
+                <TabsTrigger value="popular" className="text-xs sm:text-sm px-2 sm:px-3" data-testid="tab-popular">
                   الأكثر شهرة
                 </TabsTrigger>
-                <TabsTrigger value="trending" data-testid="tab-trending">
+                <TabsTrigger value="trending" className="text-xs sm:text-sm px-2 sm:px-3" data-testid="tab-trending">
                   الرائجة
                 </TabsTrigger>
               </TabsList>
             </Tabs>
 
-            {/* الفلاتر */}
-            <div className="space-y-4 mb-6">
+            <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
               <CategoryFilters
                 selectedCategory={selectedCategory}
                 onCategoryChange={setSelectedCategory}
               />
-              <div className="flex items-center gap-4 flex-wrap">
-                <span className="text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                <span className="text-xs sm:text-sm text-muted-foreground">
                   نوع التسعير:
                 </span>
                 <PricingFilters
@@ -144,14 +139,14 @@ export default function Home() {
               </div>
             </div>
 
-            {/* شبكة الأدوات */}
             <ToolsGrid tools={allTools} isLoading={toolsLoading} />
 
             {allTools.length > 0 && (
-              <div className="mt-8 text-center">
+              <div className="mt-6 sm:mt-8 text-center">
                 <Button
                   variant="outline"
-                  size="lg"
+                  size="default"
+                  className="text-sm sm:text-base"
                   data-testid="button-load-more"
                 >
                   تحميل المزيد من الأدوات

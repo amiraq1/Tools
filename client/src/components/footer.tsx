@@ -1,8 +1,24 @@
 import { Link } from "wouter";
-import { Sparkles, Mail, Twitter, Github, Linkedin } from "lucide-react";
+import { Mail, Twitter, Github, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+
+function PulseIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M3 12h4l3-9 4 18 3-9h4" />
+    </svg>
+  );
+}
 
 const footerLinks = {
   product: [
@@ -39,10 +55,10 @@ export function Footer() {
           {/* نبذة عن نبض */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 via-purple-500 to-blue-500 flex items-center justify-center">
+                <PulseIcon className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-lg">نبض</span>
+              <span className="font-bold text-lg bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">نبض</span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
               نبض هو دليلك لأفضل أدوات الذكاء الاصطناعي. نختار ونصنّف أحدث

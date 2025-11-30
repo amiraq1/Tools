@@ -231,6 +231,32 @@ export default function ToolDetail() {
                 </div>
               </div>
 
+              {tool.screenshots && tool.screenshots.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>لقطات شاشة</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {tool.screenshots.map((screenshot, index) => (
+                        <div
+                          key={index}
+                          className="relative aspect-video rounded-lg overflow-hidden bg-muted"
+                        >
+                          <img
+                            src={screenshot}
+                            alt={`${tool.name} - لقطة شاشة ${index + 1}`}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                            data-testid={`img-screenshot-${index}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               <Card>
                 <CardHeader>
                   <CardTitle>عن {tool.name}</CardTitle>

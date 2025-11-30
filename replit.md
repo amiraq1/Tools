@@ -1,8 +1,8 @@
-# AI Tools Directory - Replit Configuration
+# نبض (Nabdh) - دليل أدوات الذكاء الاصطناعي
 
 ## Overview
 
-This is an AI Tools Directory application - a clone of "There's An AI For That" (TAAFT). It's a full-stack web application that allows users to discover, browse, and explore AI tools across multiple categories. The platform features a modern, information-dense design optimized for quick scanning and discoverability of AI tools.
+نبض (Nabdh) is an Arabic-language AI Tools Directory application inspired by "There's An AI For That" (TAAFT). It's a full-stack web application that allows Arabic-speaking users to discover, browse, and explore AI tools across multiple categories. The platform features a modern, information-dense design optimized for quick scanning and discoverability of AI tools with full RTL (right-to-left) support.
 
 The application provides comprehensive filtering, sorting, and search capabilities to help users find the perfect AI tool for their needs. It includes features like trending tools, popular tools, detailed tool pages, category browsing, and a leaderboard system.
 
@@ -10,13 +10,29 @@ The application provides comprehensive filtering, sorting, and search capabiliti
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+### November 29, 2025 - Performance & Mobile Responsiveness
+- Fixed critical memoization bug where ToolCard was double-wrapped with memo()
+- Implemented React.lazy for code splitting across all pages
+- Enhanced mobile responsiveness with improved grid layouts and touch targets
+- Added CSS performance optimizations including GPU acceleration and smooth scrolling
+
 ## System Architecture
 
 ### Frontend Architecture
 
 **Framework**: React 18 with TypeScript, built using Vite for fast development and optimized production builds.
 
+**Language Support**: Full RTL (right-to-left) layout for Arabic language with proper text direction throughout.
+
 **Routing**: Uses Wouter for client-side routing - a lightweight alternative to React Router that provides simple declarative routing patterns.
+
+**Performance Optimizations**:
+- React.lazy and Suspense for page-level code splitting
+- Memoized ToolCard component to prevent unnecessary re-renders
+- CSS GPU acceleration with transform and will-change properties
+- Touch-optimized scrolling with -webkit-overflow-scrolling
 
 **UI Component System**: Built with Radix UI primitives and shadcn/ui components following the "New York" style variant. This provides:
 - Accessible, unstyled component primitives from Radix UI
@@ -26,9 +42,9 @@ Preferred communication style: Simple, everyday language.
 **Styling**: Tailwind CSS with custom design tokens defined in CSS variables for theming. The design system supports both light and dark modes with:
 - Custom color palette using HSL color space
 - Consistent spacing scale (2, 3, 4, 6, 8, 12, 16, 20)
-- Typography using Inter and JetBrains Mono fonts from Google Fonts
+- Typography using Tajawal (Arabic) and JetBrains Mono fonts
 - Elevation/shadow system for depth
-- Responsive breakpoints (md: 768px, lg: 1024px, xl: 1280px)
+- Responsive breakpoints (sm: 640px, md: 768px, lg: 1024px, xl: 1280px)
 
 **State Management**: 
 - TanStack Query (React Query) v5 for server state management, data fetching, and caching
@@ -47,6 +63,12 @@ Preferred communication style: Simple, everyday language.
 
 **Server Framework**: Express.js running on Node.js with TypeScript.
 
+**Build System**: 
+- tsup for backend TypeScript bundling
+- Vite for client bundling
+- Custom build script that bundles select dependencies to reduce cold start times
+- Development mode uses Vite middleware for HMR (Hot Module Replacement)
+
 **API Design**: RESTful API endpoints providing:
 - `GET /api/tools` - List all tools with optional filters (query, category, pricing, sort, pagination)
 - `GET /api/tools/featured` - Get featured, trending, and new tools
@@ -58,12 +80,6 @@ Preferred communication style: Simple, everyday language.
 - Generates mock data for AI tools with realistic properties
 - Provides search, filtering, and sorting capabilities
 - **Note**: This is designed to be replaced with a real database implementation (Drizzle ORM + PostgreSQL)
-
-**Build System**: 
-- ESBuild for fast server-side TypeScript compilation
-- Vite for client bundling
-- Custom build script that bundles select dependencies to reduce cold start times
-- Development mode uses Vite middleware for HMR (Hot Module Replacement)
 
 **Development Tools**:
 - Replit-specific plugins for development banner and error overlay
@@ -122,10 +138,18 @@ Preferred communication style: Simple, everyday language.
 - TypeScript for type safety across the stack
 - PostCSS with Autoprefixer for CSS processing
 
+### Important Development Notes
+
+**Memoization**: ToolCard is memoized at the export level in `client/src/components/tool-card.tsx`. Do NOT wrap it with additional memo() calls in parent components - this negates performance benefits.
+
+**Port Configuration**: The application runs on port 5000 for Replit compatibility.
+
 ### Design Philosophy
 
 The application follows a reference-based design approach, cloning the visual aesthetic of "There's An AI For That" with emphasis on:
+- **Arabic-First**: Full RTL support with Arabic typography and cultural adaptations
 - **Information density**: Maximum tools visible while maintaining readability
 - **Quick scanning**: Clear visual hierarchy for rapid tool evaluation  
 - **Accessibility**: Keyboard shortcuts (Cmd/Ctrl+K for search), semantic HTML, high contrast
-- **Performance**: Optimized for fast loading with hundreds of tool cards using virtualization-ready grid layouts
+- **Performance**: Code splitting, memoization, and GPU-accelerated animations
+- **Mobile Responsiveness**: Touch-optimized interactions and adaptive layouts

@@ -14,6 +14,122 @@ export interface IStorage {
   getRelatedTools(category: string, excludeId?: string): Promise<AITool[]>;
 }
 
+const toolScreenshots: Record<string, string[]> = {
+  "chatgpt": [
+    "https://images.unsplash.com/photo-1676299081847-824916de030a?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1684487747720-1ba29cda82f8?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=450&fit=crop"
+  ],
+  "midjourney": [
+    "https://images.unsplash.com/photo-1686191128892-3b37add4d731?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1684779847639-fbcc5a57dfe9?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1699116548123-cf376e79bbab?w=800&h=450&fit=crop"
+  ],
+  "claude": [
+    "https://images.unsplash.com/photo-1676299081847-824916de030a?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1675557009875-436f7a5b8f0e?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1684487747720-1ba29cda82f8?w=800&h=450&fit=crop"
+  ],
+  "dalle-3": [
+    "https://images.unsplash.com/photo-1699116548123-cf376e79bbab?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1686191128892-3b37add4d731?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1684779847639-fbcc5a57dfe9?w=800&h=450&fit=crop"
+  ],
+  "github-copilot": [
+    "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=800&h=450&fit=crop"
+  ],
+  "notion-ai": [
+    "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=450&fit=crop"
+  ],
+  "runway": [
+    "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?w=800&h=450&fit=crop"
+  ],
+  "eleven-labs": [
+    "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1558403194-611308249627?w=800&h=450&fit=crop"
+  ],
+  "perplexity-ai": [
+    "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=450&fit=crop"
+  ],
+  "canva-ai": [
+    "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&h=450&fit=crop",
+    "https://images.unsplash.com/photo-1609921212029-bb5a28e60960?w=800&h=450&fit=crop"
+  ]
+};
+
+const getDefaultScreenshots = (category: string): string[] => {
+  const categoryImages: Record<string, string[]> = {
+    "Images": [
+      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1686191128892-3b37add4d731?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1684779847639-fbcc5a57dfe9?w=800&h=450&fit=crop"
+    ],
+    "Code": [
+      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=800&h=450&fit=crop"
+    ],
+    "Videos": [
+      "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?w=800&h=450&fit=crop"
+    ],
+    "Audio": [
+      "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1558403194-611308249627?w=800&h=450&fit=crop"
+    ],
+    "Writing": [
+      "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1471107340929-a87cd0f5b5f3?w=800&h=450&fit=crop"
+    ],
+    "Marketing": [
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=800&h=450&fit=crop"
+    ],
+    "Productivity": [
+      "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=450&fit=crop"
+    ],
+    "Design": [
+      "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1609921212029-bb5a28e60960?w=800&h=450&fit=crop"
+    ],
+    "Research": [
+      "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=450&fit=crop"
+    ],
+    "default": [
+      "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1676299081847-c3c9b7c8e3e4?w=800&h=450&fit=crop",
+      "https://images.unsplash.com/photo-1675557009875-436f7a5b8f0e?w=800&h=450&fit=crop"
+    ]
+  };
+  return categoryImages[category] || categoryImages["default"];
+};
+
+const generateScreenshots = (toolSlug: string, category: string): string[] => {
+  if (toolScreenshots[toolSlug]) {
+    return toolScreenshots[toolSlug];
+  }
+  return getDefaultScreenshots(category);
+};
+
 const generateMockTools = (): AITool[] => {
   const tools: AITool[] = [
     {
@@ -37,7 +153,8 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2022-11-30T00:00:00Z",
       features: ["Natural language understanding", "Code generation", "Creative writing", "Math problem solving", "Multi-language support", "Context retention"],
-      tags: ["chatbot", "AI assistant", "writing", "productivity", "coding"]
+      tags: ["chatbot", "AI assistant", "writing", "productivity", "coding"],
+      screenshots: generateScreenshots("chatgpt", "#10A37F"),
     },
     {
       id: "2",
@@ -60,7 +177,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2022-07-12T00:00:00Z",
       features: ["Text-to-image generation", "Style customization", "High-resolution output", "Variation generation", "Upscaling", "Community gallery"],
-      tags: ["image generation", "art", "design", "creative", "AI art"]
+      tags: ["image generation", "art", "design", "creative", "AI art"],
     },
     {
       id: "3",
@@ -83,7 +200,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2023-03-14T00:00:00Z",
       features: ["Long context window", "Code analysis", "Document summarization", "Creative writing", "Research assistance", "Multi-turn conversations"],
-      tags: ["AI assistant", "chatbot", "writing", "research", "coding"]
+      tags: ["AI assistant", "chatbot", "writing", "research", "coding"],
     },
     {
       id: "4",
@@ -106,7 +223,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2023-10-01T00:00:00Z",
       features: ["High fidelity images", "Text rendering", "ChatGPT integration", "Safety features", "Prompt understanding", "Style variety"],
-      tags: ["image generation", "art", "creative", "AI art", "text-to-image"]
+      tags: ["image generation", "art", "creative", "AI art", "text-to-image"],
     },
     {
       id: "5",
@@ -129,7 +246,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2022-06-21T00:00:00Z",
       features: ["Code completion", "Multi-language support", "IDE integration", "Context awareness", "Documentation generation", "Test generation"],
-      tags: ["coding", "developer tools", "productivity", "code completion", "AI programming"]
+      tags: ["coding", "developer tools", "productivity", "code completion", "AI programming"],
     },
     {
       id: "6",
@@ -152,7 +269,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2023-02-22T00:00:00Z",
       features: ["Writing assistance", "Summarization", "Translation", "Brainstorming", "Action items extraction", "Meeting notes"],
-      tags: ["productivity", "writing", "notes", "workspace", "collaboration"]
+      tags: ["productivity", "writing", "notes", "workspace", "collaboration"],
     },
     {
       id: "7",
@@ -175,7 +292,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2021-01-15T00:00:00Z",
       features: ["Marketing copy", "Blog writing", "Brand voice", "Team collaboration", "Templates", "SEO optimization"],
-      tags: ["marketing", "copywriting", "content", "SEO", "branding"]
+      tags: ["marketing", "copywriting", "content", "SEO", "branding"],
     },
     {
       id: "8",
@@ -198,7 +315,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2022-09-01T00:00:00Z",
       features: ["Text-to-video", "Video editing", "Green screen removal", "Motion tracking", "Inpainting", "Image generation"],
-      tags: ["video", "editing", "creative", "motion", "AI video"]
+      tags: ["video", "editing", "creative", "motion", "AI video"],
     },
     {
       id: "9",
@@ -221,7 +338,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2009-08-01T00:00:00Z",
       features: ["Grammar checking", "Spelling correction", "Tone detection", "Plagiarism detection", "Style suggestions", "Browser extension"],
-      tags: ["writing", "grammar", "productivity", "communication", "editing"]
+      tags: ["writing", "grammar", "productivity", "communication", "editing"],
     },
     {
       id: "10",
@@ -244,7 +361,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2022-01-01T00:00:00Z",
       features: ["Voice cloning", "Text-to-speech", "Multiple languages", "Emotion control", "API access", "Audio editing"],
-      tags: ["voice", "audio", "text-to-speech", "voice cloning", "narration"]
+      tags: ["voice", "audio", "text-to-speech", "voice cloning", "narration"],
     },
     {
       id: "11",
@@ -267,7 +384,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2022-12-01T00:00:00Z",
       features: ["Cited answers", "Real-time search", "Follow-up questions", "Source verification", "Copilot mode", "Collections"],
-      tags: ["search", "research", "AI search", "citations", "knowledge"]
+      tags: ["search", "research", "AI search", "citations", "knowledge"],
     },
     {
       id: "12",
@@ -290,7 +407,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2020-10-01T00:00:00Z",
       features: ["Marketing copy", "Blog posts", "Product descriptions", "Email writing", "Social media", "Workflows"],
-      tags: ["copywriting", "marketing", "content", "writing", "automation"]
+      tags: ["copywriting", "marketing", "content", "writing", "automation"],
     },
     {
       id: "13",
@@ -313,7 +430,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2021-04-01T00:00:00Z",
       features: ["AI avatars", "Text-to-video", "Multiple languages", "Custom avatars", "Templates", "Brand customization"],
-      tags: ["video", "avatars", "training", "marketing", "AI video"]
+      tags: ["video", "avatars", "training", "marketing", "AI video"],
     },
     {
       id: "14",
@@ -336,7 +453,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2019-01-01T00:00:00Z",
       features: ["Text-based editing", "Transcription", "Filler word removal", "Screen recording", "Overdub", "Collaboration"],
-      tags: ["audio", "video", "editing", "podcast", "transcription"]
+      tags: ["audio", "video", "editing", "podcast", "transcription"],
     },
     {
       id: "15",
@@ -359,7 +476,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2021-01-01T00:00:00Z",
       features: ["Blog writing", "SEO optimization", "Chatsonic", "Article Writer", "AI images", "Landing pages"],
-      tags: ["writing", "SEO", "content", "blog", "marketing"]
+      tags: ["writing", "SEO", "content", "blog", "marketing"],
     },
     {
       id: "16",
@@ -382,7 +499,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2023-01-01T00:00:00Z",
       features: ["Image generation", "Game assets", "Consistent style", "Training models", "Alchemy", "Real-time canvas"],
-      tags: ["image generation", "game art", "design", "creative", "AI art"]
+      tags: ["image generation", "game art", "design", "creative", "AI art"],
     },
     {
       id: "17",
@@ -405,7 +522,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2017-02-01T00:00:00Z",
       features: ["Real-time transcription", "Meeting summaries", "Action items", "Zoom integration", "Search transcripts", "Collaboration"],
-      tags: ["transcription", "meetings", "productivity", "notes", "collaboration"]
+      tags: ["transcription", "meetings", "productivity", "notes", "collaboration"],
     },
     {
       id: "18",
@@ -428,7 +545,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2023-03-01T00:00:00Z",
       features: ["Magic Write", "Text to Image", "Magic Eraser", "Background remover", "Templates", "Brand kit"],
-      tags: ["design", "graphics", "templates", "creative", "marketing"]
+      tags: ["design", "graphics", "templates", "creative", "marketing"],
     },
     {
       id: "19",
@@ -451,7 +568,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2021-06-01T00:00:00Z",
       features: ["Blog to video", "Auto-captions", "Text-based editing", "Stock media", "Branding", "Social optimization"],
-      tags: ["video", "content repurposing", "social media", "marketing", "automation"]
+      tags: ["video", "content repurposing", "social media", "marketing", "automation"],
     },
     {
       id: "20",
@@ -474,7 +591,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2020-08-01T00:00:00Z",
       features: ["Voice generation", "120+ voices", "20+ languages", "Voice cloning", "Video sync", "API access"],
-      tags: ["voice", "voiceover", "audio", "narration", "text-to-speech"]
+      tags: ["voice", "voiceover", "audio", "narration", "text-to-speech"],
     },
     {
       id: "21",
@@ -497,7 +614,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2018-01-01T00:00:00Z",
       features: ["Auto-transcription", "Meeting summaries", "Action items", "CRM integration", "Analytics", "Search"],
-      tags: ["meetings", "transcription", "productivity", "collaboration", "notes"]
+      tags: ["meetings", "transcription", "productivity", "collaboration", "notes"],
     },
     {
       id: "22",
@@ -520,7 +637,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2023-04-01T00:00:00Z",
       features: ["Code completion", "Chat assistant", "Code explanation", "Debugging help", "Multi-language", "Collaborative coding"],
-      tags: ["coding", "IDE", "developer tools", "AI programming", "learning"]
+      tags: ["coding", "IDE", "developer tools", "AI programming", "learning"],
     },
     {
       id: "23",
@@ -543,7 +660,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2022-08-01T00:00:00Z",
       features: ["AI-generated slides", "Beautiful templates", "Interactive content", "One-click styling", "Analytics", "Embedding"],
-      tags: ["presentations", "slides", "documents", "productivity", "design"]
+      tags: ["presentations", "slides", "documents", "productivity", "design"],
     },
     {
       id: "24",
@@ -566,7 +683,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2022-09-01T00:00:00Z",
       features: ["AI generation", "Storytelling", "Image creation", "Templates", "Collaboration", "Sharing"],
-      tags: ["presentations", "storytelling", "creative", "AI content", "design"]
+      tags: ["presentations", "storytelling", "creative", "AI content", "design"],
     },
     {
       id: "25",
@@ -588,7 +705,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2022-08-22T00:00:00Z",
       features: ["Text-to-image", "Open source", "Local running", "Fine-tuning", "Inpainting", "Variations"],
-      tags: ["image generation", "open source", "AI art", "creative", "design"]
+      tags: ["image generation", "open source", "AI art", "creative", "design"],
     },
     {
       id: "26",
@@ -611,7 +728,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2023-03-21T00:00:00Z",
       features: ["Text-to-image", "Generative fill", "Text effects", "Vector recoloring", "Sketch to image", "Commercial safe"],
-      tags: ["image generation", "design", "creative", "Adobe", "commercial"]
+      tags: ["image generation", "design", "creative", "Adobe", "commercial"],
     },
     {
       id: "27",
@@ -634,7 +751,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2023-05-01T00:00:00Z",
       features: ["Natural language automation", "5000+ apps", "Chatbots", "Tables", "Interfaces", "AI actions"],
-      tags: ["automation", "integration", "productivity", "workflow", "no-code"]
+      tags: ["automation", "integration", "productivity", "workflow", "no-code"],
     },
     {
       id: "28",
@@ -657,7 +774,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2023-07-11T00:00:00Z",
       features: ["Multiple models", "Long context", "Function calling", "Vision", "Enterprise security", "Custom training"],
-      tags: ["API", "developer tools", "AI assistant", "enterprise", "coding"]
+      tags: ["API", "developer tools", "AI assistant", "enterprise", "coding"],
     },
     {
       id: "29",
@@ -680,7 +797,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2024-01-15T00:00:00Z",
       features: ["Text-to-music", "Vocals generation", "Multiple genres", "Lyrics writing", "Instrumental tracks", "Remixing"],
-      tags: ["music", "audio", "creative", "AI music", "composition"]
+      tags: ["music", "audio", "creative", "AI music", "composition"],
     },
     {
       id: "30",
@@ -703,7 +820,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2024-01-01T00:00:00Z",
       features: ["Text-to-video", "Image-to-video", "Video editing", "Motion control", "Style transfer", "Lip sync"],
-      tags: ["video", "AI video", "creative", "motion", "editing"]
+      tags: ["video", "AI video", "creative", "motion", "editing"],
     },
     {
       id: "31",
@@ -725,7 +842,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2022-11-01T00:00:00Z",
       features: ["3D capture", "NeRF technology", "Photorealistic", "Mobile app", "API access", "Export formats"],
-      tags: ["3D", "capture", "creative", "VR", "photogrammetry"]
+      tags: ["3D", "capture", "creative", "VR", "photogrammetry"],
     },
     {
       id: "32",
@@ -748,7 +865,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2023-10-01T00:00:00Z",
       features: ["AI code editing", "Codebase understanding", "Chat interface", "Multi-file edits", "VS Code compatible", "Terminal integration"],
-      tags: ["coding", "IDE", "developer tools", "AI programming", "productivity"]
+      tags: ["coding", "IDE", "developer tools", "AI programming", "productivity"],
     },
     {
       id: "33",
@@ -771,7 +888,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2019-01-01T00:00:00Z",
       features: ["Code completion", "Private hosting", "Team training", "IDE plugins", "Code patterns", "Security focus"],
-      tags: ["coding", "code completion", "developer tools", "privacy", "enterprise"]
+      tags: ["coding", "code completion", "developer tools", "privacy", "enterprise"],
     },
     {
       id: "34",
@@ -793,7 +910,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2022-11-01T00:00:00Z",
       features: ["Code completion", "Chat assistant", "70+ languages", "Free for individuals", "IDE integration", "Fast inference"],
-      tags: ["coding", "free", "code completion", "developer tools", "IDE"]
+      tags: ["coding", "free", "code completion", "developer tools", "IDE"],
     },
     {
       id: "35",
@@ -816,7 +933,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2016-01-01T00:00:00Z",
       features: ["Model hub", "Datasets", "Spaces", "Transformers library", "Inference API", "AutoTrain"],
-      tags: ["ML platform", "open source", "models", "research", "community"]
+      tags: ["ML platform", "open source", "models", "research", "community"],
     },
     {
       id: "36",
@@ -839,7 +956,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2020-01-01T00:00:00Z",
       features: ["Model hosting", "API access", "Custom models", "Serverless", "Version control", "Fine-tuning"],
-      tags: ["ML platform", "API", "cloud", "developer tools", "infrastructure"]
+      tags: ["ML platform", "API", "cloud", "developer tools", "infrastructure"],
     },
     {
       id: "37",
@@ -862,7 +979,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2018-01-01T00:00:00Z",
       features: ["Noise cancellation", "Echo removal", "Voice isolation", "Meeting transcription", "Talk time analytics", "Works with any app"],
-      tags: ["audio", "noise cancellation", "meetings", "productivity", "communication"]
+      tags: ["audio", "noise cancellation", "meetings", "productivity", "communication"],
     },
     {
       id: "38",
@@ -885,7 +1002,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2020-06-01T00:00:00Z",
       features: ["Self-organizing", "AI connections", "Smart search", "Meeting notes", "Templates", "Collaboration"],
-      tags: ["notes", "knowledge management", "productivity", "AI organization", "workspace"]
+      tags: ["notes", "knowledge management", "productivity", "AI organization", "workspace"],
     },
     {
       id: "39",
@@ -908,7 +1025,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2021-01-01T00:00:00Z",
       features: ["Email scoring", "Personalization", "Tone analysis", "Best practices", "CRM integration", "Team analytics"],
-      tags: ["sales", "email", "outreach", "productivity", "communication"]
+      tags: ["sales", "email", "outreach", "productivity", "communication"],
     },
     {
       id: "40",
@@ -931,7 +1048,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2015-01-01T00:00:00Z",
       features: ["Call recording", "Conversation analytics", "Deal intelligence", "Coaching", "Forecasting", "Integrations"],
-      tags: ["sales", "analytics", "conversation intelligence", "revenue", "enterprise"]
+      tags: ["sales", "analytics", "conversation intelligence", "revenue", "enterprise"],
     },
     {
       id: "41",
@@ -954,7 +1071,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2024-02-01T00:00:00Z",
       features: ["AI resolution", "Knowledge learning", "Multi-language", "Handoff to humans", "Analytics", "Custom training"],
-      tags: ["customer support", "chatbot", "AI agent", "automation", "service"]
+      tags: ["customer support", "chatbot", "AI agent", "automation", "service"],
     },
     {
       id: "42",
@@ -977,7 +1094,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2023-05-01T00:00:00Z",
       features: ["AI agents", "Intelligent triage", "Agent suggestions", "Automation", "Knowledge base", "Analytics"],
-      tags: ["customer support", "helpdesk", "automation", "enterprise", "service"]
+      tags: ["customer support", "helpdesk", "automation", "enterprise", "service"],
     },
     {
       id: "43",
@@ -1000,7 +1117,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2023-03-14T00:00:00Z",
       features: ["Personalized tutoring", "Socratic method", "Teacher tools", "Writing support", "Math help", "Safe for students"],
-      tags: ["education", "tutoring", "learning", "students", "teachers"]
+      tags: ["education", "tutoring", "learning", "students", "teachers"],
     },
     {
       id: "44",
@@ -1023,7 +1140,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2023-03-14T00:00:00Z",
       features: ["Roleplay", "Explain my answer", "Conversation practice", "Personalized feedback", "Multiple languages", "Gamification"],
-      tags: ["education", "languages", "learning", "practice", "mobile"]
+      tags: ["education", "languages", "learning", "practice", "mobile"],
     },
     {
       id: "45",
@@ -1046,7 +1163,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2021-01-01T00:00:00Z",
       features: ["Paper search", "Information extraction", "Summarization", "Citation management", "Concept mapping", "Export"],
-      tags: ["research", "academic", "papers", "literature review", "science"]
+      tags: ["research", "academic", "papers", "literature review", "science"],
     },
     {
       id: "46",
@@ -1069,7 +1186,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2022-01-01T00:00:00Z",
       features: ["Question answering", "Paper synthesis", "Citations", "Yes/No meter", "Filters", "Academic focus"],
-      tags: ["research", "academic", "search", "evidence-based", "science"]
+      tags: ["research", "academic", "search", "evidence-based", "science"],
     },
     {
       id: "47",
@@ -1092,7 +1209,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2022-11-01T00:00:00Z",
       features: ["Legal research", "Contract analysis", "Document drafting", "Due diligence", "Case law search", "Confidential"],
-      tags: ["legal", "law", "contracts", "research", "enterprise"]
+      tags: ["legal", "law", "contracts", "research", "enterprise"],
     },
     {
       id: "48",
@@ -1115,7 +1232,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2013-01-01T00:00:00Z",
       features: ["CoCounsel AI", "Legal research", "Document review", "Deposition prep", "Contract analysis", "Parallel search"],
-      tags: ["legal", "research", "documents", "law firms", "enterprise"]
+      tags: ["legal", "research", "documents", "law firms", "enterprise"],
     },
     {
       id: "49",
@@ -1138,7 +1255,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2018-01-01T00:00:00Z",
       features: ["Medical imaging AI", "Care coordination", "Stroke detection", "Real-time alerts", "FDA cleared", "EHR integration"],
-      tags: ["healthcare", "medical imaging", "diagnosis", "hospitals", "AI detection"]
+      tags: ["healthcare", "medical imaging", "diagnosis", "hospitals", "AI detection"],
     },
     {
       id: "50",
@@ -1160,7 +1277,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2022-01-01T00:00:00Z",
       features: ["Differential diagnosis", "Clinical plans", "Medical knowledge base", "Evidence-based", "Provider focused", "Quick access"],
-      tags: ["healthcare", "clinical", "diagnosis", "doctors", "medical"]
+      tags: ["healthcare", "clinical", "diagnosis", "doctors", "medical"],
     },
     {
       id: "51",
@@ -1182,7 +1299,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2019-01-01T00:00:00Z",
       features: ["Expense categorization", "Savings finder", "Anomaly detection", "Receipt matching", "Vendor negotiations", "Reporting"],
-      tags: ["finance", "expense management", "corporate card", "automation", "savings"]
+      tags: ["finance", "expense management", "corporate card", "automation", "savings"],
     },
     {
       id: "52",
@@ -1204,7 +1321,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2017-01-01T00:00:00Z",
       features: ["Photo-based help", "Step-by-step solutions", "Multiple subjects", "Video explanations", "Learning resources", "Free to use"],
-      tags: ["education", "homework", "students", "learning", "free"]
+      tags: ["education", "homework", "students", "learning", "free"],
     },
     {
       id: "53",
@@ -1227,7 +1344,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2023-06-01T00:00:00Z",
       features: ["Post generation", "Content repurposing", "Scheduling", "Analytics", "Multi-platform", "Team collaboration"],
-      tags: ["social media", "content", "scheduling", "marketing", "automation"]
+      tags: ["social media", "content", "scheduling", "marketing", "automation"],
     },
     {
       id: "54",
@@ -1250,7 +1367,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2023-09-01T00:00:00Z",
       features: ["Auto-clipping", "Virality score", "Auto-captions", "B-roll", "Reframing", "Multi-platform export"],
-      tags: ["video", "clips", "social media", "content", "automation"]
+      tags: ["video", "clips", "social media", "content", "automation"],
     },
     {
       id: "55",
@@ -1273,7 +1390,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2019-01-01T00:00:00Z",
       features: ["Background removal", "Product photos", "Batch editing", "Templates", "AI shadows", "API access"],
-      tags: ["photo editing", "e-commerce", "background removal", "product photos", "design"]
+      tags: ["photo editing", "e-commerce", "background removal", "product photos", "design"],
     },
     {
       id: "56",
@@ -1296,7 +1413,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2018-01-29T00:00:00Z",
       features: ["GPU مجانية", "Python مدعومة", "مفاكتير Jupyter", "تخزين سحابي", "تعاون فوري", "مكتبات AI محسنة"],
-      tags: ["برمجة", "تعلم آلي", "ذكاء اصطناعي", "علم البيانات", "GPU مجانية"]
+      tags: ["برمجة", "تعلم آلي", "ذكاء اصطناعي", "علم البيانات", "GPU مجانية"],
     },
     {
       id: "57",
@@ -1319,7 +1436,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2022-04-01T00:00:00Z",
       features: ["استضافة مجانية", "Streamlit و Gradio", "ملايين النماذج", "مشاركة سهلة", "GPU مجانية", "API مفتوحة"],
-      tags: ["استضافة", "AI", "مشاركة النماذج", "تطبيقات ويب", "مفتوح المصدر"]
+      tags: ["استضافة", "AI", "مشاركة النماذج", "تطبيقات ويب", "مفتوح المصدر"],
     },
     {
       id: "58",
@@ -1342,7 +1459,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2022-08-22T00:00:00Z",
       features: ["Stable Diffusion", "مفتوح المصدر", "توليد سريع", "إضافات", "API مفتوحة", "استخدام محلي"],
-      tags: ["توليد صور", "AI", "مفتوح المصدر", "فن", "إبداع"]
+      tags: ["توليد صور", "AI", "مفتوح المصدر", "فن", "إبداع"],
     },
     {
       id: "59",
@@ -1365,7 +1482,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2023-02-01T00:00:00Z",
       features: ["أفاتارات واقعية", "أصوات متعددة", "خلفيات مخصصة", "دعم لغات متعددة", "تحرير سهل", "تصدير سريع"],
-      tags: ["فيديو", "أفاتارات", "تدريب", "تسويق", "محتوى"]
+      tags: ["فيديو", "أفاتارات", "تدريب", "تسويق", "محتوى"],
     },
     {
       id: "60",
@@ -1388,7 +1505,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2023-05-15T00:00:00Z",
       features: ["توليد من الصور", "توليد من النص", "تعديل الحركة", "جودة عالية", "سرعة عالية", "واجهة بسيطة"],
-      tags: ["فيديو", "توليد", "إبداع", "محتوى", "مجاني"]
+      tags: ["فيديو", "توليد", "إبداع", "محتوى", "مجاني"],
     },
     {
       id: "61",
@@ -1411,7 +1528,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2023-03-01T00:00:00Z",
       features: ["إكمال كود", "مجاني بدون حد", "دعم لغات متعددة", "ملحق متصفح", "سرعة عالية", "دقة جيدة"],
-      tags: ["كود", "برمجة", "AI", "مساعد", "مجاني"]
+      tags: ["كود", "برمجة", "AI", "مساعد", "مجاني"],
     },
     {
       id: "62",
@@ -1434,7 +1551,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2017-01-01T00:00:00Z",
       features: ["نص لكلام", "أصوات طبيعية", "سرعة متغيرة", "دعم PDF", "ملحق متصفح", "تطبيق موبايل"],
-      tags: ["صوت", "قراءة", "إنتاجية", "ولوج", "تعليم"]
+      tags: ["صوت", "قراءة", "إنتاجية", "ولوج", "تعليم"],
     },
     {
       id: "63",
@@ -1457,7 +1574,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2016-01-01T00:00:00Z",
       features: ["بيئة كاملة", "100+ لغة", "استضافة مجانية", "مساعد AI", "تعاون فوري", "نسخ احتياطية"],
-      tags: ["برمجة", "تطوير", "استضافة", "AI", "تعاون"]
+      tags: ["برمجة", "تطوير", "استضافة", "AI", "تعاون"],
     },
     {
       id: "64",
@@ -1480,7 +1597,7 @@ const generateMockTools = (): AITool[] => {
       isTrending: false,
       releasedAt: "2017-08-28T00:00:00Z",
       features: ["ترجمة عالية الجودة", "30+ لغة", "دقة عالية", "حفظ الأسلوب", "API متاحة", "ملحق متصفح"],
-      tags: ["ترجمة", "لغات", "AI", "إنتاجية", "تواصل"]
+      tags: ["ترجمة", "لغات", "AI", "إنتاجية", "تواصل"],
     },
     {
       id: "65",
@@ -1503,11 +1620,14 @@ const generateMockTools = (): AITool[] => {
       isTrending: true,
       releasedAt: "2022-06-01T00:00:00Z",
       features: ["تكبير الصور", "مفتوح المصدر", "معالجة محلية", "بدون حد", "سرعة عالية", "جودة ممتازة"],
-      tags: ["صور", "تكبير", "مجاني", "مفتوح المصدر", "تحسين"]
+      tags: ["صور", "تكبير", "مجاني", "مفتوح المصدر", "تحسين"],
     }
   ];
 
-  return tools;
+  return tools.map(tool => ({
+    ...tool,
+    screenshots: tool.screenshots || generateScreenshots(tool.slug, tool.category),
+  }));
 };
 
 export class MemStorage implements IStorage {
@@ -1531,7 +1651,7 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
+    const user: User = { ...insertUser, id, email: null };
     this.users.set(id, user);
     return user;
   }
