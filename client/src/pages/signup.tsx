@@ -1,20 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, User, ArrowRight } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { Mail, Lock, User } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Signup() {
   const [, navigate] = useLocation();
+  const { signup, isAuthenticated } = useAuth();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,13 +32,15 @@ export default function Signup() {
       return;
     }
 
+    if (password.length < 6) {
+      setError("كلمة السر يجب أن تكون 6 أحرف على الأقل");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await apiRequest("/api/auth/signup", {
-        method: "POST",
-        body: JSON.stringify({ username, email, password }),
-      });
+      await signup(username, password, email);
       navigate("/");
     } catch (err: any) {
       setError(err.message || "فشل إنشاء الحساب");

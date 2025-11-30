@@ -57,8 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (savedIdsData?.ids) {
       setSavedToolIds(savedIdsData.ids);
     } else if (!isAuthenticated) {
-      const localSaved = JSON.parse(localStorage.getItem("nabdh-saved-tools") || "[]");
-      setSavedToolIds(localSaved);
+      setSavedToolIds([]);
     }
   }, [savedIdsData, isAuthenticated]);
 
@@ -79,37 +78,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     await apiRequest("POST", "/api/auth/logout", {});
-    queryClient.clear();
+    await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    await queryClient.invalidateQueries({ queryKey: ["/api/saved-tools/ids"] });
+    await queryClient.invalidateQueries({ queryKey: ["/api/saved-tools"] });
     setSavedToolIds([]);
   }, [queryClient]);
 
   const saveTool = useCallback(async (toolId: string) => {
-    if (isAuthenticated) {
-      await apiRequest("POST", `/api/saved-tools/${toolId}`, {});
-      setSavedToolIds(prev => [...prev, toolId]);
-      queryClient.invalidateQueries({ queryKey: ["/api/saved-tools"] });
-    } else {
-      const localSaved = JSON.parse(localStorage.getItem("nabdh-saved-tools") || "[]");
-      if (!localSaved.includes(toolId)) {
-        localSaved.push(toolId);
-        localStorage.setItem("nabdh-saved-tools", JSON.stringify(localSaved));
-        setSavedToolIds(localSaved);
-      }
+    if (!isAuthenticated) {
+      throw new Error("يجب تسجيل الدخول لحفظ الأدوات");
     }
-  }, [isAuthenticated, queryClient]);
+    
+    const previousIds = [...savedToolIds];
+    setSavedToolIds(prev => [...prev, toolId]);
+    
+    try {
+      await apiRequest("POST", `/api/saved-tools/${toolId}`, {});
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-tools"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-tools/ids"] });
+    } catch (error) {
+      setSavedToolIds(previousIds);
+      throw error;
+    }
+  }, [isAuthenticated, queryClient, savedToolIds]);
 
   const unsaveTool = useCallback(async (toolId: string) => {
-    if (isAuthenticated) {
-      await apiRequest("DELETE", `/api/saved-tools/${toolId}`, undefined);
-      setSavedToolIds(prev => prev.filter(id => id !== toolId));
-      queryClient.invalidateQueries({ queryKey: ["/api/saved-tools"] });
-    } else {
-      const localSaved = JSON.parse(localStorage.getItem("nabdh-saved-tools") || "[]");
-      const updated = localSaved.filter((id: string) => id !== toolId);
-      localStorage.setItem("nabdh-saved-tools", JSON.stringify(updated));
-      setSavedToolIds(updated);
+    if (!isAuthenticated) {
+      throw new Error("يجب تسجيل الدخول لإزالة الأدوات");
     }
-  }, [isAuthenticated, queryClient]);
+    
+    const previousIds = [...savedToolIds];
+    setSavedToolIds(prev => prev.filter(id => id !== toolId));
+    
+    try {
+      await apiRequest("DELETE", `/api/saved-tools/${toolId}`, undefined);
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-tools"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-tools/ids"] });
+    } catch (error) {
+      setSavedToolIds(previousIds);
+      throw error;
+    }
+  }, [isAuthenticated, queryClient, savedToolIds]);
 
   const isToolSaved = useCallback((toolId: string) => {
     return savedToolIds.includes(toolId);
@@ -118,9 +127,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshSavedTools = useCallback(() => {
     if (isAuthenticated) {
       refetchSavedIds();
-    } else {
-      const localSaved = JSON.parse(localStorage.getItem("nabdh-saved-tools") || "[]");
-      setSavedToolIds(localSaved);
     }
   }, [isAuthenticated, refetchSavedIds]);
 

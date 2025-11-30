@@ -3,12 +3,16 @@ import express, {
   type Response,
   type NextFunction,
 } from "express";
+import session from "express-session";
+import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer, type IncomingMessage } from "http";
 
 const app = express();
 const httpServer = createServer(app);
+
+const SessionStore = MemoryStore(session);
 
 declare module "http" {
   interface IncomingMessage {
@@ -20,6 +24,12 @@ declare module "express-serve-static-core" {
   interface Request extends IncomingMessage {}
 }
 
+declare module "express-session" {
+  interface SessionData {
+    userId: string;
+  }
+}
+
 app.use(
   express.json({
     verify: (req, _res, buf) => {
@@ -29,6 +39,22 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "nabdh-secret-key-change-in-production",
+    resave: false,
+    saveUninitialized: false,
+    store: new SessionStore({
+      checkPeriod: 86400000,
+    }),
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    },
+  })
+);
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {

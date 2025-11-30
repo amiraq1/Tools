@@ -1,18 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, ArrowRight } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { Mail, Lock } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Login() {
   const [, navigate] = useLocation();
+  const { login, isAuthenticated } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,10 +27,7 @@ export default function Login() {
     setIsLoading(true);
     
     try {
-      await apiRequest("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ username, password }),
-      });
+      await login(username, password);
       navigate("/");
     } catch (err: any) {
       setError(err.message || "فشل تسجيل الدخول");

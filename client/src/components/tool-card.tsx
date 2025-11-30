@@ -1,11 +1,12 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 import { useLocation } from "wouter";
-import { ExternalLink, Bookmark, Share2, ArrowUp, Star } from "lucide-react";
+import { ExternalLink, Bookmark, Share2, ArrowUp, Star, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ToolIcon } from "@/components/tool-icon";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import type { AITool } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
@@ -50,18 +51,58 @@ const getPricingColor = (pricing: string) => {
 
 function ToolCardComponent({ tool, variant = "default" }: ToolCardProps) {
   const [, navigate] = useLocation();
-  const { isToolSaved, saveTool, unsaveTool } = useAuth();
+  const { isToolSaved, saveTool, unsaveTool, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
   const isSaved = isToolSaved(tool.id);
 
   const handleSave = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    if (isSaved) {
-      await unsaveTool(tool.id);
-    } else {
-      await saveTool(tool.id);
+    
+    if (!isAuthenticated) {
+      toast({
+        title: "يجب تسجيل الدخول",
+        description: "سجل دخولك لحفظ الأدوات المفضلة",
+        action: (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/login")}
+            data-testid="button-toast-login"
+          >
+            تسجيل الدخول
+          </Button>
+        ),
+      });
+      return;
     }
-  }, [tool.id, isSaved, saveTool, unsaveTool]);
+    
+    if (isSaving) return;
+    
+    setIsSaving(true);
+    try {
+      if (isSaved) {
+        await unsaveTool(tool.id);
+        toast({
+          description: "تم إزالة الأداة من المحفوظات",
+        });
+      } else {
+        await saveTool(tool.id);
+        toast({
+          description: "تم حفظ الأداة بنجاح",
+        });
+      }
+    } catch {
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء حفظ الأداة",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  }, [tool.id, isSaved, saveTool, unsaveTool, isSaving, toast, isAuthenticated, navigate]);
 
   const handleCardClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -153,9 +194,14 @@ function ToolCardComponent({ tool, variant = "default" }: ToolCardProps) {
                 isSaved && "text-primary"
               )}
               onClick={handleSave}
+              disabled={isSaving}
               data-testid={`button-bookmark-${tool.id}`}
             >
-              <Bookmark className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", isSaved && "fill-current")} />
+              {isSaving ? (
+                <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+              ) : (
+                <Bookmark className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", isSaved && "fill-current")} />
+              )}
             </Button>
             <Button
               variant="ghost"
