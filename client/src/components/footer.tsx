@@ -1,8 +1,9 @@
 import { Link } from "wouter";
-import { Mail, Twitter, Github, Linkedin } from "lucide-react";
+import { Mail, Twitter, Github, Linkedin, Crown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 
 function PulseIcon({ className }: { className?: string }) {
   return (
@@ -170,9 +171,30 @@ export function Footer() {
               </Button>
             </div>
           </div>
-          <div className="text-sm text-muted-foreground text-center sm:text-start">
-            <p>© {new Date().getFullYear()} نبض - دليل أدوات الذكاء الاصطناعي. جميع الحقوق محفوظة.</p>
-            <p className="mt-1">بإدارة <span className="font-semibold text-foreground">عمار محمد</span></p>
+          <div className="flex flex-col items-center sm:items-end gap-3">
+            <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 border border-purple-500/20">
+              <div className="relative">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 via-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                  عم
+                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 flex items-center justify-center">
+                  <Crown className="w-2.5 h-2.5 text-white" />
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-foreground bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+                    عمار محمد
+                  </span>
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-500/30">
+                    <Sparkles className="w-2.5 h-2.5 ml-0.5" />
+                    المؤسس
+                  </Badge>
+                </div>
+                <span className="text-xs text-muted-foreground">مؤسس ومدير نبض</span>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} نبض - دليل أدوات الذكاء الاصطناعي. جميع الحقوق محفوظة.</p>
           </div>
         </div>
       </div>

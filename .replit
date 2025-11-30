@@ -1,6 +1,6 @@
 modules = ["nodejs-20", "web", "postgresql-16"]
 
-# تشغيل المشروع في التطوير
+# تشغيل المشروع في وضع التطوير
 run = "npm run dev"
 
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
@@ -15,18 +15,12 @@ deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
 run = ["npm", "run", "start"]
 
+# ربط منفذ واحد فقط (5000 داخلي ← 80 خارجي)
 [[ports]]
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 45013
-externalPort = 3000
-
-# ⚠ مهم جداً:
-# لا تجعل PORT ثابتاً، لأن Replit سيضعه في وقت النشر
-# لذلك لا يوجد [env] PORT هنا
-
+# تشغيل زر Run في واجهة Replit
 [workflows]
 runButton = "Project"
 
@@ -48,5 +42,6 @@ task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
 
+# بدون Stripe
 [agent]
-integrations = ["stripe:1.0.0", "github:1.0.0"]
+integrations = ["github:1.0.0"]
