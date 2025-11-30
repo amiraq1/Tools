@@ -4,6 +4,7 @@ import express, {
   type NextFunction,
 } from "express";
 import session from "express-session";
+
 import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
@@ -163,7 +164,8 @@ function errorHandler(
       await setupVite(httpServer, app);
     }
 
-    const port = Number.parseInt(process.env.PORT ?? "3000", 10);
+   const port = Number(process.env.PORT) || 3000;
+
 
     httpServer.listen(port, "0.0.0.0", () => {
       log(`Server listening on port ${port}`, "http");
