@@ -1,5 +1,5 @@
 import { useEffect, lazy, Suspense } from "react";
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -7,6 +7,16 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
+
+function ScrollToTop() {
+  const [location] = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [location]);
+  
+  return null;
+}
 
 const Home = lazy(() => import("@/pages/home"));
 const ToolDetail = lazy(() => import("@/pages/tool-detail"));
@@ -41,25 +51,28 @@ function PageLoader() {
 
 function Router() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/tool/:slug" component={ToolDetail} />
-        <Route path="/category/:category" component={Category} />
-        <Route path="/leaderboard" component={Leaderboard} />
-        <Route path="/trending" component={Trending} />
-        <Route path="/popular" component={Popular} />
-        <Route path="/saved" component={SavedTools} />
-        <Route path="/settings" component={Settings} />
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-        <Route path="/about" component={About} />
-        <Route path="/contact" component={Contact} />
-        <Route path="/privacy" component={Privacy} />
-        <Route path="/terms" component={Terms} />
-        <Route component={NotFound} />
-      </Switch>
-    </Suspense>
+    <>
+      <ScrollToTop />
+      <Suspense fallback={<PageLoader />}>
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route path="/tool/:slug" component={ToolDetail} />
+          <Route path="/category/:category" component={Category} />
+          <Route path="/leaderboard" component={Leaderboard} />
+          <Route path="/trending" component={Trending} />
+          <Route path="/popular" component={Popular} />
+          <Route path="/saved" component={SavedTools} />
+          <Route path="/settings" component={Settings} />
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
+          <Route path="/about" component={About} />
+          <Route path="/contact" component={Contact} />
+          <Route path="/privacy" component={Privacy} />
+          <Route path="/terms" component={Terms} />
+          <Route component={NotFound} />
+        </Switch>
+      </Suspense>
+    </>
   );
 }
 
