@@ -12,6 +12,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### November 30, 2025 - Authentication & Saved Tools
+- Implemented complete session-based authentication with express-session and memorystore
+- Added AuthProvider context for centralized authentication state management
+- Created saved tools feature allowing authenticated users to bookmark AI tools
+- Unauthenticated users see login prompt toast when trying to save tools
+- Optimistic UI updates with rollback on error for save/unsave operations
+- Added saved tools page (/saved) to view bookmarked tools
+- Header updates conditionally based on auth state (login/signup or user dropdown)
+
 ### November 29, 2025 - Performance & Mobile Responsiveness
 - Fixed critical memoization bug where ToolCard was double-wrapped with memo()
 - Implemented React.lazy for code splitting across all pages
@@ -58,6 +67,9 @@ Preferred communication style: Simple, everyday language.
 - Trending (`/trending`) - Trending AI tools
 - Popular (`/popular`) - Most upvoted tools
 - Leaderboard (`/leaderboard`) - Rankings by votes, ratings, and views
+- Saved Tools (`/saved`) - User's bookmarked tools (requires authentication)
+- Login (`/login`) - User login page
+- Signup (`/signup`) - User registration page
 
 ### Backend Architecture
 
