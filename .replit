@@ -1,11 +1,15 @@
 modules = ["nodejs-20", "web", "postgresql-16"]
+
+# تشغيل المشروع في التطوير
 run = "npm run dev"
+
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
 channel = "stable-24_05"
 packages = ["zip"]
 
+# إعدادات النشر
 [deployment]
 deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
@@ -16,39 +20,12 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 34401
-externalPort = 3003
-
-[[ports]]
-localPort = 35563
-externalPort = 5173
-
-[[ports]]
-localPort = 36567
+localPort = 45013
 externalPort = 3000
 
-[[ports]]
-localPort = 38099
-externalPort = 6000
-
-[[ports]]
-localPort = 40191
-externalPort = 3001
-
-[[ports]]
-localPort = 40635
-externalPort = 5000
-
-[[ports]]
-localPort = 41379
-externalPort = 4200
-
-[[ports]]
-localPort = 41677
-externalPort = 3002
-
-[env]
-PORT = "5000"
+# ⚠ مهم جداً:
+# لا تجعل PORT ثابتاً، لأن Replit سيضعه في وقت النشر
+# لذلك لا يوجد [env] PORT هنا
 
 [workflows]
 runButton = "Project"
