@@ -151,6 +151,17 @@ function errorHandler(
   res.status(status).json({ message });
 }
 
+process.on('unhandledRejection', (reason, promise) => {
+  log(`Unhandled Rejection: ${reason}`, 'error');
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  log(`Uncaught Exception: ${error.message}`, 'error');
+  console.error('Uncaught Exception:', error);
+  console.error(error.stack);
+});
+
 (async () => {
   try {
     await registerRoutes(httpServer, app);

@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { Search, X, ArrowRight, Clock, TrendingUp } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ToolIcon } from "@/components/tool-icon";
 import type { AITool } from "@shared/schema";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 interface SearchModalProps {
   open: boolean;
@@ -77,6 +78,9 @@ export function SearchModal({ open, onOpenChange, tools }: SearchModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl p-0 gap-0 overflow-hidden">
+        <VisuallyHidden>
+          <DialogTitle>البحث عن أدوات الذكاء الاصطناعي</DialogTitle>
+        </VisuallyHidden>
         <div className="flex items-center gap-3 px-4 py-3 border-b">
           <Search className="w-5 h-5 text-muted-foreground shrink-0" />
           <Input
