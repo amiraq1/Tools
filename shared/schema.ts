@@ -21,6 +21,7 @@ export const savedTools = pgTable("saved_tools", {
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  email: true,
 });
 
 export const insertSavedToolSchema = createInsertSchema(savedTools).pick({

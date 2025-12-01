@@ -92,7 +92,7 @@ export default function Home() {
                 <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 أحدث الأدوات
               </h2>
-              <Link href="/new">
+              <Link href="/trending">
                 <Button
                   variant="ghost"
                   size="sm"

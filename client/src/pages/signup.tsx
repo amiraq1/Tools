@@ -40,7 +40,7 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      await signup(username, password, email);
+      await signup(username, email, password);
       navigate("/");
     } catch (err: any) {
       setError(err.message || "فشل إنشاء الحساب");

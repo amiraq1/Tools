@@ -80,7 +80,7 @@ export default function SavedTools() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header tools={tools} />
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">

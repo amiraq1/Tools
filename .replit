@@ -32,6 +32,14 @@ localPort = 39781
 localPort = 42155
 externalPort = 3000
 
+[[ports]]
+localPort = 43595
+externalPort = 3002
+
+[[ports]]
+localPort = 46519
+externalPort = 3001
+
 # تشغيل زر Run في واجهة Replit
 [workflows]
 runButton = "Project"

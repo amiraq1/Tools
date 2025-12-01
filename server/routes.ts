@@ -148,8 +148,8 @@ export async function registerRoutes(
     try {
       const query = {
         query: req.query.query as string | undefined,
-        category: req.query.category as string | undefined,
-        pricing: req.query.pricing as string | undefined,
+        category: req.query.category as any,
+        pricing: req.query.pricing as any,
         sort: req.query.sort as "new" | "popular" | "trending" | "top-rated" | undefined,
         page: req.query.page ? parseInt(req.query.page as string) : undefined,
         limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
